@@ -1,11 +1,12 @@
-<<<<<<< HEAD
-node_modules
-<<<<<<< Updated upstream
+node_modules/
+.angular/
+dist/
+
+=======
+.angular
+>>>>>>> Stashed changes
 =======
 node_modules/
 .angular/
 dist/
 >>>>>>> 64a5aa3900a63f48fbcb9f4b1e4869cf60f4c96a
-=======
-.angular
->>>>>>> Stashed changes
