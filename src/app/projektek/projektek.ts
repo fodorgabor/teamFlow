@@ -1,5 +1,5 @@
-import { CommonModule } from '@angular/common';
 import { Component, computed, inject, OnInit, signal } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { forkJoin } from 'rxjs';
 import { ProjectService } from '../core/api/project.service';
@@ -8,6 +8,8 @@ import { StatusService } from '../core/api/status-service';
 import { ProjectMemberService } from '../core/api/project-member-service';
 import { UserService } from '../core/api/user-service';
 import { Project } from '../models/project.model';
+import { User } from '../models/user.model';
+import { ProjektUrlapModal } from './projekt-urlap-modal/projekt-urlap-modal';
 
 interface ProjectCard {
   project: Project;
@@ -20,7 +22,7 @@ interface ProjectCard {
 @Component({
   selector: 'app-projektek',
   standalone: true,
-  imports: [CommonModule, RouterLink],
+  imports: [CommonModule, RouterLink, ProjektUrlapModal],
   templateUrl: './projektek.html',
   styleUrl: './projektek.css'
 })
@@ -32,13 +34,22 @@ export class Projektek implements OnInit {
   private readonly userService = inject(UserService);
 
   cards = signal<ProjectCard[]>([]);
-  activeCount = computed(
-  () => this.cards().filter(c => c.project.status === 'active').length
-  );
+  users = signal<User[]>([]);
   loading = signal(true);
   error = signal(false);
+  createOpen = signal(false);
+  notice = signal('');
+
+  activeCount = computed(
+    () => this.cards().filter(c => c.project.status === 'active').length
+  );
 
   ngOnInit(): void {
+    this.load();
+  }
+
+  load(): void {
+    this.loading.set(true);
     forkJoin({
       projects: this.projectService.list(),
       tasks: this.taskService.list(),
@@ -48,6 +59,7 @@ export class Projektek implements OnInit {
     }).subscribe({
       next: ({ projects, tasks, statuses, members, users }) => {
         const doneId = statuses.find(s => s.key === 'done')?.id;
+        this.users.set(users);
 
         this.cards.set(
           projects.map(project => {
@@ -70,6 +82,7 @@ export class Projektek implements OnInit {
             };
           })
         );
+        this.error.set(false);
         this.loading.set(false);
       },
       error: () => {
@@ -77,6 +90,12 @@ export class Projektek implements OnInit {
         this.loading.set(false);
       }
     });
+  }
+
+  onCreated(project: Project): void {
+    this.createOpen.set(false);
+    this.notice.set(`A(z) „${project.name}” projekt létrejött.`);
+    this.load();
   }
 
   trackById(index: number, card: ProjectCard): number {
