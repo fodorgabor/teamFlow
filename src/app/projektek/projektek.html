@@ -1,1 +1,52 @@
-<p>projektek works!</p>
+<section class="projects-page">
+  <div class="page-heading">
+    <div>
+      <h1>Projektek</h1>
+      <p>{{ activeCount() }} aktív projekt · közös célok</p>
+    </div>
+    <button class="new-project" type="button"><span aria-hidden="true">+</span> Új projekt</button>
+  </div>
+
+  <p class="message" *ngIf="loading()">Projektek betöltése...</p>
+  <p class="message error" *ngIf="error()">Nem érhető el a kiszolgáló.</p>
+
+  <div class="project-grid" *ngIf="!loading() && !error()">
+    <article class="project-card" *ngFor="let card of cards(); trackBy: trackById">
+      <span class="status" [class.archived]="card.project.status !== 'active'">
+        {{ card.project.status === 'active' ? 'Aktív' : 'Archivált' }}
+      </span>
+      <h2>{{ card.project.name }}</h2>
+      <p class="description">{{ card.project.description }}</p>
+
+      <div class="project-stats">
+        <div>
+          <span class="stat-label">Határidő</span>
+          <strong>{{ card.project.dueDate | date:'yyyy.MM.dd.' }}</strong>
+        </div>
+        <div>
+          <span class="stat-label">Feladatok</span>
+          <strong>{{ card.done }} / {{ card.total }} kész</strong>
+        </div>
+      </div>
+
+      <div
+        class="progress-track"
+        role="progressbar"
+        [attr.aria-valuenow]="card.percent"
+        aria-valuemin="0"
+        aria-valuemax="100"
+        [attr.aria-label]="card.project.name + ' készültsége'">
+        <div class="progress-fill" [style.width.%]="card.percent"></div>
+      </div>
+
+      <div class="card-footer">
+        <div class="member-avatars" aria-label="Projekt csapattagjai">
+          <span class="avatar">KA</span>
+          <span class="avatar">NB</span>
+        </div>
+        <button class="open-project" type="button">Megnyitás</button>
+      </div>
+    </article>
+    <p class="message empty-state" *ngIf="cards().length === 0">Még nincsenek projektek.</p>
+  </div>
+</section>
