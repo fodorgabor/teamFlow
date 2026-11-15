@@ -1,0 +1,29 @@
+.page-head h1 { font-size: 28px; font-weight: 700; margin: 0; color: #172033; }
+.crumb { color: #667085; margin: 4px 0 24px; }
+.crumb a { color: #667085; }
+h2 { font-size: 20px; margin: 32px 0 16px; color: #172033; }
+
+.card { background: #FFFFFF; border: 1px solid #E1E6EF; border-radius: 12px; padding: 20px; }
+.desc { margin: 0 0 12px; color: #172033; }
+.meta, .sub, .role { color: #667085; font-size: 13px; }
+
+.members { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 16px; }
+.member { display: flex; align-items: center; gap: 12px; }
+.avatar {
+  width: 36px; height: 36px; border-radius: 50%;
+  display: inline-flex; align-items: center; justify-content: center;
+  background: #E8EEFF; color: #315CE8; font-size: 12px; font-weight: 700;
+}
+
+.table-wrap { overflow-x: auto; background: #FFFFFF; border: 1px solid #E1E6EF; border-radius: 12px; }
+table { width: 100%; border-collapse: collapse; }
+th { text-align: left; font-size: 12px; color: #667085; text-transform: uppercase; padding: 12px 16px; border-bottom: 1px solid #E1E6EF; }
+td { padding: 12px 16px; border-bottom: 1px solid #E1E6EF; font-size: 14px; }
+tr:last-child td { border-bottom: none; }
+.status { font-weight: 700; }
+
+.error-box { background: #FFFFFF; border: 1px solid #E1E6EF; border-radius: 12px; padding: 24px; }
+.back {
+  display: inline-flex; align-items: center; min-height: 42px; padding: 0 24px;
+  border: 1px solid #E1E6EF; border-radius: 8px; color: #315CE8; font-weight: 700; text-decoration: none;
+}

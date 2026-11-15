@@ -1,0 +1,64 @@
+<p *ngIf="loading()">Betöltés...</p>
+
+<section *ngIf="errorMessage()" class="error-box" role="alert">
+  <h1>Hiba</h1>
+  <p>{{ errorMessage() }}</p>
+  <a class="back" routerLink="/projektek">Vissza a projektekhez</a>
+</section>
+
+<ng-container *ngIf="project() as p">
+  <header class="page-head">
+    <h1>{{ p.name }}</h1>
+    <p class="crumb"><a routerLink="/projektek">Projektek</a> / #{{ p.id }}</p>
+  </header>
+
+  <section class="card info">
+    <p class="desc">{{ p.description }}</p>
+    <p class="meta">
+      Tulajdonos: {{ userName(p.ownerId) }} ·
+      {{ p.startDate | date:'yyyy.MM.dd.' }} - {{ p.dueDate | date:'yyyy.MM.dd.' }}
+    </p>
+  </section>
+
+  <h2>Projekttagok</h2>
+  <div class="members">
+    <article class="card member" *ngFor="let m of members(); trackBy: trackById">
+      <span class="avatar">{{ initials(m.userId) }}</span>
+      <div>
+        <strong>{{ userName(m.userId) }}</strong>
+        <div class="role">{{ m.role }}</div>
+      </div>
+    </article>
+    <p *ngIf="members().length === 0">Nincs tag a projektben.</p>
+  </div>
+
+  <h2>Kapcsolódó feladatok</h2>
+  <div class="table-wrap">
+    <table *ngIf="tasks().length > 0; else noTasks">
+      <thead>
+        <tr>
+          <th>Feladat</th>
+          <th>Állapot</th>
+          <th>Felelős</th>
+          <th>Határidő</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let t of tasks(); trackBy: trackById">
+          <td>
+            <strong>{{ t.title }}</strong>
+            <div class="sub">#{{ t.id }} · {{ p.name }}</div>
+          </td>
+          <td>
+            <span class="status" [style.color]="statusOf(t.statusId)?.color">
+              {{ statusOf(t.statusId)?.name }}
+            </span>
+          </td>
+          <td>{{ userName(t.assigneeId) }}</td>
+          <td>{{ t.dueDate | date:'yyyy.MM.dd.' }}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <ng-template #noTasks><p>Nincs kapcsolódó feladat.</p></ng-template>
+</ng-container>

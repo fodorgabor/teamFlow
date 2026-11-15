@@ -44,7 +44,7 @@
           <span class="avatar">KA</span>
           <span class="avatar">NB</span>
         </div>
-        <button class="open-project" type="button">Megnyitás</button>
+        <button class="open-project" type="button" [routerLink]="['/projektek', card.project.id]">Megnyitás</button>
       </div>
     </article>
     <p class="message empty-state" *ngIf="cards().length === 0">Még nincsenek projektek.</p>

@@ -1,9 +1,12 @@
-import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Component, computed, inject, OnInit, signal } from '@angular/core';
+import { RouterLink } from '@angular/router';
 import { forkJoin } from 'rxjs';
 import { ProjectService } from '../core/api/project.service';
 import { TaskService } from '../core/api/task-service';
 import { StatusService } from '../core/api/status-service';
+import { ProjectMemberService } from '../core/api/project-member-service';
+import { UserService } from '../core/api/user-service';
 import { Project } from '../models/project.model';
 
 interface ProjectCard {
@@ -11,12 +14,13 @@ interface ProjectCard {
   total: number;
   done: number;
   percent: number;
+  initials: string[];
 }
 
 @Component({
   selector: 'app-projektek',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, RouterLink],
   templateUrl: './projektek.html',
   styleUrl: './projektek.css'
 })
@@ -24,9 +28,13 @@ export class Projektek implements OnInit {
   private readonly projectService = inject(ProjectService);
   private readonly taskService = inject(TaskService);
   private readonly statusService = inject(StatusService);
+  private readonly memberService = inject(ProjectMemberService);
+  private readonly userService = inject(UserService);
 
   cards = signal<ProjectCard[]>([]);
-  activeCount = computed(() => this.cards().filter(card => card.project.status === 'active').length);
+  activeCount = computed(
+  () => this.cards().filter(c => c.project.status === 'active').length
+  );
   loading = signal(true);
   error = signal(false);
 
@@ -34,9 +42,11 @@ export class Projektek implements OnInit {
     forkJoin({
       projects: this.projectService.list(),
       tasks: this.taskService.list(),
-      statuses: this.statusService.list()
+      statuses: this.statusService.list(),
+      members: this.memberService.list(),
+      users: this.userService.list()
     }).subscribe({
-      next: ({ projects, tasks, statuses }) => {
+      next: ({ projects, tasks, statuses, members, users }) => {
         const doneId = statuses.find(s => s.key === 'done')?.id;
 
         this.cards.set(
@@ -44,11 +54,19 @@ export class Projektek implements OnInit {
             const projectTasks = tasks.filter(t => t.projectId === project.id);
             const done = projectTasks.filter(t => t.statusId === doneId).length;
             const total = projectTasks.length;
+
+            const initials = members
+              .filter(m => m.projectId === project.id)
+              .map(m => users.find(u => u.id === m.userId))
+              .filter(u => !!u)
+              .map(u => u!.name.split(' ').map(part => part[0]).join(''));
+
             return {
               project,
               total,
               done,
-              percent: total ? Math.round((done / total) * 100) : 0
+              percent: total ? Math.round((done / total) * 100) : 0,
+              initials
             };
           })
         );
