@@ -1,0 +1,42 @@
+<div class="backdrop" (click)="close()">
+  <div #dialog class="modal" role="dialog" aria-modal="true" tabindex="-1"
+       aria-labelledby="user-modal-title" (click)="$event.stopPropagation()">
+    <h2 id="user-modal-title">{{ user ? 'Csapattag szerkesztése' : 'Új csapattag' }}</h2>
+
+    <form [formGroup]="form" (ngSubmit)="save()" novalidate>
+      <label for="user-name">Név *</label>
+      <input id="user-name" type="text" formControlName="name" autocomplete="name" />
+      <p class="field-error" *ngIf="showError('name')">
+        A név 2-60 karakter legyen (csak szóköz nem fogadható el).
+      </p>
+
+      <label for="user-email">E-mail-cím *</label>
+      <input id="user-email" type="email" formControlName="email" autocomplete="email" />
+      <p class="field-error" *ngIf="showError('email')">
+        <ng-container *ngIf="form.controls.email.hasError('emailTaken'); else invalidEmail">
+          Ez az e-mail-cím már használatban van.
+        </ng-container>
+        <ng-template #invalidEmail>Adj meg egy érvényes e-mail-címet.</ng-template>
+      </p>
+
+      <label for="user-role">Szerepkör *</label>
+      <input id="user-role" type="text" formControlName="role" autocomplete="organization-title" />
+      <p class="field-error" *ngIf="showError('role')">
+        A szerepkör 2-40 karakter legyen (csak szóköz nem fogadható el).
+      </p>
+
+      <label class="checkbox-label" for="user-active">
+        <input id="user-active" type="checkbox" formControlName="active" />
+        Aktív csapattag
+      </label>
+
+      <p class="field-error" role="alert" *ngIf="saveError()">{{ saveError() }}</p>
+      <p class="saving" *ngIf="saving()">Mentés folyamatban...</p>
+
+      <div class="modal-actions">
+        <button type="button" class="btn" (click)="close()" [disabled]="saving()">Mégse</button>
+        <button type="submit" class="btn primary" [disabled]="saving()">Mentés</button>
+      </div>
+    </form>
+  </div>
+</div>
