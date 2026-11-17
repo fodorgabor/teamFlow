@@ -1,61 +1,59 @@
-<div class="page">
-  <div class="page-header">
-    <div>
-      <h1>Projektek</h1>
-      <p class="subtitle">{{ activeCount() }} aktív projekt</p>
-    </div>
-    <button class="btn-primary" type="button" (click)="createOpen.set(true)">+ Új projekt</button>
+<header class="page-head">
+  <div>
+    <h1>Projektek</h1>
+    <p class="subtitle">{{ activeCount() }} aktív projekt · közös célok</p>
   </div>
+  <button type="button" class="btn primary" (click)="createOpen.set(true)"
+          [disabled]="loading() || error()">
+    + Új projekt
+  </button>
+</header>
 
-  @if (notice()) {
-    <p class="notice" role="status">{{ notice() }}</p>
-  }
+<p class="notice" role="status" *ngIf="notice()">{{ notice() }}</p>
 
-  @if (loading()) {
-    <p class="loading">Betöltés...</p>
-  } @else if (error()) {
-    <p class="error" role="alert">A projektek betöltése nem sikerült.</p>
-  } @else {
-    <div class="project-list">
-      @for (card of cards(); track card.project.id) {
-        <article class="project-card">
-          <div class="page-header">
-            <div>
-              <h2>{{ card.project.name }}</h2>
-              <p>{{ card.project.description }}</p>
-            </div>
-            <span class="status-badge">
-              {{ card.project.status === 'active' ? 'Aktív' : 'Archivált' }}
-            </span>
-          </div>
-
-          <p>{{ card.project.startDate | date: 'yyyy.MM.dd.' }} – {{ card.project.dueDate | date: 'yyyy.MM.dd.' }}</p>
-          <p>{{ card.done }} / {{ card.total }} feladat kész ({{ card.percent }}%)</p>
-          <div
-            class="progress"
-            role="progressbar"
-            [attr.aria-valuenow]="card.percent"
-            aria-valuemin="0"
-            aria-valuemax="100"
-            [attr.aria-label]="card.project.name + ' készültsége'"
-          >
-            <div class="progress-value" [style.width.%]="card.percent"></div>
-          </div>
-          @if (card.initials.length) {
-            <p>Csapattagok: {{ card.initials.join(', ') }}</p>
-          }
-        </article>
-      } @empty {
-        <p class="empty">Még nincsenek projektek.</p>
-      }
-    </div>
-  }
+<p *ngIf="loading()">Betöltés...</p>
+<div class="error-box" role="alert" *ngIf="error()">
+  <p>Nem érhető el a kiszolgáló.</p>
+  <button type="button" class="btn" (click)="load()">Újrapróbálás</button>
 </div>
 
-@if (createOpen()) {
-  <app-projekt-urlap-modal
-    [users]="users()"
-    (saved)="onCreated($event)"
-    (closed)="createOpen.set(false)"
-  />
-}
+<div class="grid">
+  <article class="card" *ngFor="let card of cards(); trackBy: trackById">
+    <span class="badge" [class.archived]="card.project.status !== 'active'">
+      {{ card.project.status === 'active' ? 'Aktív' : 'Archivált' }}
+    </span>
+
+    <h2>{{ card.project.name }}</h2>
+    <p class="desc">{{ card.project.description }}</p>
+
+    <div class="meta">
+      <div>
+        <span class="label">Határidő</span>
+        <strong>{{ card.project.dueDate | date:'yyyy.MM.dd.' }}</strong>
+      </div>
+      <div>
+        <span class="label">Feladatok</span>
+        <strong>{{ card.done }} / {{ card.total }} kész</strong>
+      </div>
+    </div>
+
+    <div class="bar">
+      <div class="fill" [style.width.%]="card.percent"></div>
+    </div>
+
+    <div class="footer">
+      <div class="avatars">
+        <span class="avatar" *ngFor="let i of card.initials">{{ i }}</span>
+      </div>
+      <a class="open-btn" [routerLink]="['/projektek', card.project.id]">Megnyitás</a>
+    </div>
+  </article>
+</div>
+
+<app-projekt-urlap-modal
+  *ngIf="createOpen()"
+  [project]="null"
+  [users]="users()"
+  (saved)="onCreated($event)"
+  (closed)="createOpen.set(false)">
+</app-projekt-urlap-modal>

@@ -6,6 +6,7 @@ import { Csapat } from './csapat/csapat';
 import { Attekintes } from './attekintes/attekintes';
 import { UjFeladat } from './uj-feladat/uj-feladat';
 import { FeladatReszletezo } from './feladat-reszletezo/feladat-reszletezo';
+import { ProjektReszletezo } from './projektek/projekt-reszletezo/projekt-reszletezo';
 
 export const routes: Routes = [
   { path: '', component: Attekintes },
@@ -14,5 +15,6 @@ export const routes: Routes = [
   { path: 'feladatok/new', component: UjFeladat },
   { path: 'feladatok/:id', component: FeladatReszletezo },
   { path: 'projektek', component: Projektek },
+  { path: 'projektek/:id', component: ProjektReszletezo },
   { path: 'torzsadatok', component: Torzsadatok },
 ];
