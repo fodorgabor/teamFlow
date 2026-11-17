@@ -1,12 +1,61 @@
-<h1>Projektek</h1>
+<div class="page">
+  <div class="page-header">
+    <div>
+      <h1>Projektek</h1>
+      <p class="subtitle">{{ activeCount() }} aktív projekt</p>
+    </div>
+    <button class="btn-primary" type="button" (click)="createOpen.set(true)">+ Új projekt</button>
+  </div>
 
-<div class="project-list">
-    @for (project of projects; track project.id) {
-        <div class="project-card">
-            <h2>{{project.name}}</h2>
-            <p>{{project.description}}</p>
-            <p>{{project.doDate}}</p>
-            <p>{{project.startDate}}</p>
-        </div>
-    }
+  @if (notice()) {
+    <p class="notice" role="status">{{ notice() }}</p>
+  }
+
+  @if (loading()) {
+    <p class="loading">Betöltés...</p>
+  } @else if (error()) {
+    <p class="error" role="alert">A projektek betöltése nem sikerült.</p>
+  } @else {
+    <div class="project-list">
+      @for (card of cards(); track card.project.id) {
+        <article class="project-card">
+          <div class="page-header">
+            <div>
+              <h2>{{ card.project.name }}</h2>
+              <p>{{ card.project.description }}</p>
+            </div>
+            <span class="status-badge">
+              {{ card.project.status === 'active' ? 'Aktív' : 'Archivált' }}
+            </span>
+          </div>
+
+          <p>{{ card.project.startDate | date: 'yyyy.MM.dd.' }} – {{ card.project.dueDate | date: 'yyyy.MM.dd.' }}</p>
+          <p>{{ card.done }} / {{ card.total }} feladat kész ({{ card.percent }}%)</p>
+          <div
+            class="progress"
+            role="progressbar"
+            [attr.aria-valuenow]="card.percent"
+            aria-valuemin="0"
+            aria-valuemax="100"
+            [attr.aria-label]="card.project.name + ' készültsége'"
+          >
+            <div class="progress-value" [style.width.%]="card.percent"></div>
+          </div>
+          @if (card.initials.length) {
+            <p>Csapattagok: {{ card.initials.join(', ') }}</p>
+          }
+        </article>
+      } @empty {
+        <p class="empty">Még nincsenek projektek.</p>
+      }
+    </div>
+  }
 </div>
+
+@if (createOpen()) {
+  <app-projekt-urlap-modal
+    [users]="users()"
+    (saved)="onCreated($event)"
+    (closed)="createOpen.set(false)"
+  />
+}

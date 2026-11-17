@@ -1,6 +1,5 @@
 import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterLink } from '@angular/router';
 import { forkJoin } from 'rxjs';
 import { ProjectService } from '../core/api/project.service';
 import { TaskService } from '../core/api/task-service';
@@ -22,7 +21,7 @@ interface ProjectCard {
 @Component({
   selector: 'app-projektek',
   standalone: true,
-  imports: [CommonModule, RouterLink, ProjektUrlapModal],
+  imports: [CommonModule, ProjektUrlapModal],
   templateUrl: './projektek.html',
   styleUrl: './projektek.css'
 })
