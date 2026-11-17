@@ -17,9 +17,9 @@ export interface TaskView extends Task {
   projectName: string;
 }
 
-// A json-server az ID-ket néha szövegként adja vissza, ezért számként hasonlítunk
+// Az ID lehet szám (1) vagy szöveg ("xVd4Mp6UZNA"), ezért szövegként hasonlítunk
 const sameId = (a: number | string, b: number | string): boolean =>
-  Number(a) === Number(b);
+  String(a) === String(b);
 
 @Component({
   selector: 'app-feladatok',
@@ -67,7 +67,9 @@ export class Feladatok implements OnInit {
 
         this.tasks = tasks
           .map((task) => this.toTaskView(task, statuses, users, projects))
-          .sort((a, b) => Number(a.id) - Number(b.id)); // Alapsorrend: id növekvő
+          .sort((a, b) =>
+            String(a.id).localeCompare(String(b.id), undefined, { numeric: true })
+          ); // Alapsorrend: id növekvő
 
         this.applyFilters();
         this.loading = false;
@@ -129,7 +131,7 @@ export class Feladatok implements OnInit {
   get subtitle(): string {
     const total = this.tasks.length;
     const shown = this.filteredTasks.length;
-    const projectCount = new Set(this.tasks.map((t) => t.projectId)).size;
+    const projectCount = new Set(this.tasks.map((t) => String(t.projectId))).size;
 
     if (this.statusFilter === 'all' && this.assigneeFilter === 'all' && this.projectFilter === 'all' && !this.searchTerm) {
       return `${total} feladat · ${projectCount} projekt · minden állapot`;

@@ -13,9 +13,9 @@ import { CommentService, Comment } from '../../service/comment-service';
 import { ChecklistService, ChecklistItem } from '../../service/checklist-service';
 import { TimeEntryService, TimeEntry } from '../../service/time-entry-service';
 
-// A json-server az ID-ket néha szövegként adja vissza, ezért számként hasonlítunk
+// Az ID lehet szám (1) vagy szöveg ("xVd4Mp6UZNA"), ezért szövegként hasonlítunk
 const sameId = (a: number | string, b: number | string): boolean =>
-  Number(a) === Number(b);
+  String(a) === String(b);
 
 @Component({
   selector: 'app-feladat-reszletezo',

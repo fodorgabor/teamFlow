@@ -19,6 +19,10 @@ export class TimeEntryService {
 
   constructor(private http: HttpClient) {}
 
+  getAll(): Observable<TimeEntry[]> {
+    return this.http.get<TimeEntry[]>(this.apiUrl);
+  }
+
   getByTask(taskId: number | string): Observable<TimeEntry[]> {
     return this.http.get<TimeEntry[]>(`${this.apiUrl}?taskId=${taskId}`);
   }

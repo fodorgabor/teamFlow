@@ -1,59 +1,12 @@
-<header class="page-head">
-  <div>
-    <h1>Projektek</h1>
-    <p class="subtitle">{{ activeCount() }} aktív projekt · közös célok</p>
-  </div>
-  <button type="button" class="btn primary" (click)="createOpen.set(true)"
-          [disabled]="loading() || error()">
-    + Új projekt
-  </button>
-</header>
+<h1>Projektek</h1>
 
-<p class="notice" role="status" *ngIf="notice()">{{ notice() }}</p>
-
-<p *ngIf="loading()">Betöltés...</p>
-<div class="error-box" role="alert" *ngIf="error()">
-  <p>Nem érhető el a kiszolgáló.</p>
-  <button type="button" class="btn" (click)="load()">Újrapróbálás</button>
+<div class="project-list">
+    @for (project of projects; track project.id) {
+        <div class="project-card">
+            <h2>{{project.name}}</h2>
+            <p>{{project.description}}</p>
+            <p>{{project.doDate}}</p>
+            <p>{{project.startDate}}</p>
+        </div>
+    }
 </div>
-
-<div class="grid">
-  <article class="card" *ngFor="let card of cards(); trackBy: trackById">
-    <span class="badge" [class.archived]="card.project.status !== 'active'">
-      {{ card.project.status === 'active' ? 'Aktív' : 'Archivált' }}
-    </span>
-
-    <h2>{{ card.project.name }}</h2>
-    <p class="desc">{{ card.project.description }}</p>
-
-    <div class="meta">
-      <div>
-        <span class="label">Határidő</span>
-        <strong>{{ card.project.dueDate | date:'yyyy.MM.dd.' }}</strong>
-      </div>
-      <div>
-        <span class="label">Feladatok</span>
-        <strong>{{ card.done }} / {{ card.total }} kész</strong>
-      </div>
-    </div>
-
-    <div class="bar">
-      <div class="fill" [style.width.%]="card.percent"></div>
-    </div>
-
-    <div class="footer">
-      <div class="avatars">
-        <span class="avatar" *ngFor="let i of card.initials">{{ i }}</span>
-      </div>
-      <a class="open-btn" [routerLink]="['/projektek', card.project.id]">Megnyitás</a>
-    </div>
-  </article>
-</div>
-
-<app-projekt-urlap-modal
-  *ngIf="createOpen()"
-  [project]="null"
-  [users]="users()"
-  (saved)="onCreated($event)"
-  (closed)="createOpen.set(false)">
-</app-projekt-urlap-modal>

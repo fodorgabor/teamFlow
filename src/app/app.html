@@ -1,42 +1,58 @@
-<div class="app-shell">
+<div class="app-layout">
+  <!-- Oldalsó panel -->
   <aside class="sidebar">
-    <a class="brand" [routerLink]="['/']" aria-label="TeamFlow kezdőlap">
-      <span class="brand-mark">T</span>
-      <span>TeamFlow</span>
-    </a>
+    <div class="sidebar-header">
+      <div class="logo">
+        <div class="logo-icon">T</div>
+        <span class="logo-text">TeamFlow</span>
+      </div>
+    </div>
 
-    <nav class="navigation" aria-label="Fő navigáció">
-      <span class="nav-heading">MUNKATERÜLET</span>
-      <a class="nav-link" [routerLink]="['/']" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
-        <span class="nav-icon">A</span><span>Áttekintés</span>
-      </a>
-      <a class="nav-link" [routerLink]="['/feladatok']" routerLinkActive="active">
-        <span class="nav-icon">F</span><span>Feladatok</span>
-      </a>
-      <a class="nav-link" [routerLink]="['/projektek']" routerLinkActive="active">
-        <span class="nav-icon">P</span><span>Projektek</span>
-      </a>
-      <a class="nav-link" [routerLink]="['/csapat']" routerLinkActive="active">
-        <span class="nav-icon">C</span><span>Csapat</span>
-      </a>
-      <a class="nav-link" [routerLink]="['/torzsadatok']" routerLinkActive="active">
-        <span class="nav-icon">T</span><span>Törzsadatok</span>
-      </a>
-    </nav>
+    <div class="sidebar-section">
+      <div class="section-title">MUNKATERÜLET</div>
 
-    <div class="profile">
-      <span class="avatar profile-avatar">KA</span>
-      <span class="profile-details"><strong>Kiss Anna</strong><small>Csapattag</small></span>
+      <nav class="nav">
+        <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }" class="nav-item">
+          <span class="nav-icon">A</span>
+          <span>Áttekintés</span>
+        </a>
+
+        <a routerLink="/feladatok" routerLinkActive="active" class="nav-item">
+          <span class="nav-icon">F</span>
+          <span>Feladatok</span>
+        </a>
+
+        <a routerLink="/projektek" routerLinkActive="active" class="nav-item">
+          <span class="nav-icon">P</span>
+          <span>Projektek</span>
+        </a>
+
+        <a routerLink="/csapat" routerLinkActive="active" class="nav-item">
+          <span class="nav-icon">C</span>
+          <span>Csapat</span>
+        </a>
+
+        <a routerLink="/torzsadatok" routerLinkActive="active" class="nav-item">
+          <span class="nav-icon">T</span>
+          <span>Törzsadatok</span>
+        </a>
+      </nav>
+    </div>
+
+    <!-- Felhasználó alul -->
+    <div class="sidebar-footer">
+      <div class="user">
+        <div class="avatar">KA</div>
+        <div class="user-info">
+          <div class="user-name">Kiss Anna</div>
+          <div class="user-role">Csapattag</div>
+        </div>
+      </div>
     </div>
   </aside>
 
-  <div class="workspace">
-    <header class="topbar">
-      <div class="breadcrumbs"><span>Frontend projekt</span><span class="breadcrumb-divider">/</span><strong>Csapatmunka</strong></div>
-      <span class="team-count">2 csapattag</span>
-    </header>
-    <main class="page-content">
-      <router-outlet></router-outlet>
-    </main>
-  </div>
+  <!-- Fő tartalom -->
+  <main class="main-content">
+    <router-outlet></router-outlet>
+  </main>
 </div>

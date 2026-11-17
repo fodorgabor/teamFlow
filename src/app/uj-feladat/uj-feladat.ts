@@ -10,6 +10,10 @@ import { PriorityService, Priority } from '../../service/priority-service';
 import { UserService, User } from '../../service/user-service';
 import { ProjectsService, Project } from '../../service/projects-service';
 
+// Szám marad, ha az ID szám, különben szövegként megy tovább
+const asId = (v: number | string): number =>
+  (Number.isNaN(Number(v)) ? v : Number(v)) as number;
+
 @Component({
   selector: 'app-uj-feladat',
   standalone: true,
@@ -118,12 +122,12 @@ export class UjFeladat implements OnInit {
     this.saving = true;
 
     const newTask = {
-      projectId: Number(this.projectId),
+      projectId: asId(this.projectId!),
       title: this.title.trim(),
       description: this.description.trim(),
-      assigneeId: Number(this.assigneeId),
-      statusId: Number(this.statusId),
-      priorityId: Number(this.priorityId),
+      assigneeId: asId(this.assigneeId!),
+      statusId: asId(this.statusId),
+      priorityId: asId(this.priorityId),
       dueDate: this.dueDate,
       estimateHours: this.estimateHours || 1,
       labelIds: this.selectedLabelIds,

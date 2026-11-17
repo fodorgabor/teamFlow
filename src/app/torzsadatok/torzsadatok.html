@@ -1,1 +1,164 @@
-<p>torzsadatok works!</p>
+<div class="page">
+  <!-- Fejléc -->
+  <div class="page-header">
+    <div>
+      <h1>Törzsadatok</h1>
+      <p class="subtitle">Címkék, állapotok és prioritások kezelése.</p>
+    </div>
+    <button type="button" class="btn-primary" (click)="openNew()">{{ newButtonText }}</button>
+  </div>
+
+  <!-- Fülek -->
+  <div class="tabs">
+    <button type="button" class="tab" [class.active]="tab === 'labels'" (click)="setTab('labels')">Címkék</button>
+    <button type="button" class="tab" [class.active]="tab === 'statuses'" (click)="setTab('statuses')">Állapotok</button>
+    <button type="button" class="tab" [class.active]="tab === 'priorities'" (click)="setTab('priorities')">Prioritások</button>
+  </div>
+
+  @if (errorMessage) {
+    <p class="error">{{ errorMessage }}</p>
+  }
+
+  @if (loading) {
+    <p class="loading">Betöltés...</p>
+  } @else {
+
+    <!-- Új / szerkesztés űrlap -->
+    @if (formOpen) {
+      <section class="form-card">
+        <h2>{{ editingId === null ? 'Új elem' : 'Szerkesztés' }}</h2>
+
+        <div class="form-grid">
+          <div class="field">
+            <label for="name">Név</label>
+            <input id="name" type="text" [(ngModel)]="form.name" (keyup.enter)="save()" />
+          </div>
+
+          @if (tab !== 'priorities') {
+            <div class="field">
+              <label for="color">Szín</label>
+              <div class="color-row">
+                <input id="color" type="color" [(ngModel)]="form.color" />
+                <input type="text" [(ngModel)]="form.color" maxlength="7" />
+              </div>
+            </div>
+          }
+
+          @if (tab === 'statuses') {
+            <div class="field">
+              <label for="key">Kulcs</label>
+              <input id="key" type="text" placeholder="pl. todo" [(ngModel)]="form.key" />
+            </div>
+            <div class="field">
+              <label for="order">Sorrend</label>
+              <input id="order" type="number" min="1" [(ngModel)]="form.order" />
+            </div>
+          }
+
+          @if (tab === 'priorities') {
+            <div class="field">
+              <label for="level">Szint</label>
+              <input id="level" type="number" min="1" [(ngModel)]="form.level" />
+            </div>
+          }
+        </div>
+
+        <div class="form-actions">
+          <button type="button" class="btn-primary" [disabled]="saving" (click)="save()">
+            {{ saving ? 'Mentés...' : 'Mentés' }}
+          </button>
+          <button type="button" class="btn-secondary" (click)="cancelForm()">Mégse</button>
+        </div>
+      </section>
+    }
+
+    <!-- Táblázatok -->
+    <div class="table-wrapper">
+
+      @if (tab === 'labels') {
+        <table class="data-table">
+          <thead>
+            <tr><th>NÉV</th><th>SZÍN</th><th>MŰVELETEK</th></tr>
+          </thead>
+          <tbody>
+            @for (label of labels; track label.id) {
+              <tr>
+                <td>
+                  <span class="badge" [style.background-color]="label.color + '20'" [style.color]="label.color">
+                    {{ label.name }}
+                  </span>
+                </td>
+                <td>
+                  <span class="swatch" [style.background-color]="label.color"></span>
+                  <span class="hex">{{ label.color }}</span>
+                </td>
+                <td class="actions">
+                  <button type="button" class="link" (click)="editLabel(label)">Szerk.</button>
+                  <button type="button" class="link" (click)="removeLabel(label)">Törlés</button>
+                </td>
+              </tr>
+            } @empty {
+              <tr><td colspan="3" class="empty">Még nincs címke.</td></tr>
+            }
+          </tbody>
+        </table>
+      }
+
+      @if (tab === 'statuses') {
+        <table class="data-table">
+          <thead>
+            <tr><th>NÉV</th><th>SZÍN</th><th>KULCS</th><th>SORREND</th><th>MŰVELETEK</th></tr>
+          </thead>
+          <tbody>
+            @for (status of statuses; track status.id) {
+              <tr>
+                <td>
+                  <span class="badge" [style.background-color]="status.color + '20'" [style.color]="status.color">
+                    {{ status.name }}
+                  </span>
+                </td>
+                <td>
+                  <span class="swatch" [style.background-color]="status.color"></span>
+                  <span class="hex">{{ status.color }}</span>
+                </td>
+                <td>{{ status.key }}</td>
+                <td>{{ status.order }}</td>
+                <td class="actions">
+                  <button type="button" class="link" (click)="editStatus(status)">Szerk.</button>
+                  <button type="button" class="link" (click)="removeStatus(status)">Törlés</button>
+                </td>
+              </tr>
+            } @empty {
+              <tr><td colspan="5" class="empty">Még nincs állapot.</td></tr>
+            }
+          </tbody>
+        </table>
+      }
+
+      @if (tab === 'priorities') {
+        <table class="data-table">
+          <thead>
+            <tr><th>NÉV</th><th>SZINT</th><th>MŰVELETEK</th></tr>
+          </thead>
+          <tbody>
+            @for (priority of priorities; track priority.id) {
+              <tr>
+                <td><span class="badge neutral">{{ priority.name }}</span></td>
+                <td>{{ priority.level }}</td>
+                <td class="actions">
+                  <button type="button" class="link" (click)="editPriority(priority)">Szerk.</button>
+                  <button type="button" class="link" (click)="removePriority(priority)">Törlés</button>
+                </td>
+              </tr>
+            } @empty {
+              <tr><td colspan="3" class="empty">Még nincs prioritás.</td></tr>
+            }
+          </tbody>
+        </table>
+      }
+    </div>
+
+    <p class="count">{{ countText }}</p>
+    <p class="note">A hivatkozott törzsadat törlése előtt a kapcsolatokat meg kell szüntetni.</p>
+  }
+</div>
