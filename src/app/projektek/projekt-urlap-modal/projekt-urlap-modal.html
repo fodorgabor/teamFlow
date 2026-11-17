@@ -1,0 +1,52 @@
+<div class="backdrop" (click)="close()">
+  <div #dialog class="modal" role="dialog" aria-modal="true" tabindex="-1"
+       aria-labelledby="proj-modal-title" (click)="$event.stopPropagation()">
+
+    <h2 id="proj-modal-title">{{ project ? 'Projekt szerkesztése' : 'Új projekt' }}</h2>
+
+    <form [formGroup]="form" (ngSubmit)="save()" novalidate>
+      <label for="p-name">Projekt neve *</label>
+      <input id="p-name" type="text" formControlName="name" autocomplete="off" />
+      <p class="field-error" *ngIf="showError('name')">A név 3-80 karakter legyen (csak szóköz nem fogadható el).</p>
+
+      <label for="p-desc">Leírás</label>
+      <textarea id="p-desc" rows="3" formControlName="description"></textarea>
+      <p class="field-error" *ngIf="showError('description')">A leírás legfeljebb 1000 karakter lehet.</p>
+
+      <label for="p-owner">Tulajdonos *</label>
+      <select id="p-owner" formControlName="ownerId">
+        <option [ngValue]="null">Válassz tulajdonost</option>
+        <option *ngFor="let u of users; trackBy: trackById" [ngValue]="u.id">{{ u.name }}</option>
+      </select>
+      <p class="field-error" *ngIf="showError('ownerId')">Válassz tulajdonost.</p>
+
+      <label for="p-status">Státusz *</label>
+      <select id="p-status" formControlName="status">
+        <option value="active">Aktív</option>
+        <option value="archived">Archivált</option>
+      </select>
+
+      <div class="row">
+        <div>
+          <label for="p-start">Kezdő dátum *</label>
+          <input id="p-start" type="date" formControlName="startDate" />
+          <p class="field-error" *ngIf="showError('startDate')">Add meg a kezdő dátumot.</p>
+        </div>
+        <div>
+          <label for="p-due">Határidő *</label>
+          <input id="p-due" type="date" formControlName="dueDate" />
+          <p class="field-error" *ngIf="showError('dueDate')">Add meg a határidőt.</p>
+        </div>
+      </div>
+      <p class="field-error" *ngIf="showDateOrder()">A határidő nem lehet korábbi a kezdő dátumnál.</p>
+
+      <p class="field-error" role="alert" *ngIf="saveError()">{{ saveError() }}</p>
+      <p class="saving" *ngIf="saving()">Mentés folyamatban...</p>
+
+      <div class="modal-actions">
+        <button type="button" class="btn" (click)="close()" [disabled]="saving()">Mégse</button>
+        <button type="submit" class="btn primary" [disabled]="saving()">Mentés</button>
+      </div>
+    </form>
+  </div>
+</div>

@@ -1,0 +1,200 @@
+<p *ngIf="loading()">Betöltés...</p>
+
+<section *ngIf="errorMessage()" class="error-box" role="alert">
+  <h1>Hiba</h1>
+  <p>{{ errorMessage() }}</p>
+  <a class="back" routerLink="/projektek">Vissza a projektekhez</a>
+</section>
+
+<ng-container *ngIf="project() as p">
+  <header class="page-head head-row">
+    <div>
+      <h1>{{ p.name }}</h1>
+      <p class="crumb"><a routerLink="/projektek">Projektek</a> / #{{ p.id }}</p>
+    </div>
+    <div class="head-actions">
+      <button type="button" class="btn" (click)="editOpen.set(true)">Szerkesztés</button>
+      <button type="button" class="btn danger-outline" (click)="openDelete()">Törlés</button>
+    </div>
+  </header>
+
+  <p class="notice" role="status" *ngIf="notice()">{{ notice() }}</p>
+
+  <section class="card info">
+    <p class="desc">{{ p.description }}</p>
+    <p class="meta">
+      Tulajdonos: {{ userName(p.ownerId) }} ·
+      {{ p.startDate | date:'yyyy.MM.dd.' }} - {{ p.dueDate | date:'yyyy.MM.dd.' }} ·
+      {{ p.status === 'active' ? 'Aktív' : 'Archivált' }}
+    </p>
+  </section>
+
+  <div class="section-head">
+    <h2>Projekttagok</h2>
+    <button type="button" class="btn primary" (click)="openAdd()"
+            [disabled]="availableUsers().length === 0">
+      + Tag hozzáadása
+    </button>
+  </div>
+
+  <div class="members">
+    <article class="card member" *ngFor="let m of members(); trackBy: trackById">
+      <span class="avatar">{{ initials(m.userId) }}</span>
+      <div class="member-info">
+        <strong>{{ userName(m.userId) }}</strong>
+        <div class="role">{{ m.role }}</div>
+      </div>
+      <div class="actions">
+        <button type="button" class="link" (click)="openEdit(m)">Szerk.</button>
+        <button type="button" class="link danger" (click)="openRemove(m)">Eltávolítás</button>
+      </div>
+    </article>
+    <p *ngIf="members().length === 0">Nincs tag a projektben.</p>
+  </div>
+
+  <h2>Kapcsolódó feladatok</h2>
+  <div class="table-wrap">
+    <table *ngIf="tasks().length > 0; else noTasks">
+      <thead>
+        <tr>
+          <th>Feladat</th>
+          <th>Állapot</th>
+          <th>Felelős</th>
+          <th>Határidő</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let t of tasks(); trackBy: trackById">
+          <td>
+            <strong>{{ t.title }}</strong>
+            <div class="sub">#{{ t.id }} · {{ p.name }}</div>
+          </td>
+          <td>
+            <span class="status" [style.color]="statusOf(t.statusId)?.color">
+              {{ statusOf(t.statusId)?.name }}
+            </span>
+          </td>
+          <td>{{ userName(t.assigneeId) }}</td>
+          <td>{{ t.dueDate | date:'yyyy.MM.dd.' }}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <ng-template #noTasks><p>Nincs kapcsolódó feladat.</p></ng-template>
+</ng-container>
+
+<!-- ===== PROJEKT SZERKESZTÉS ===== -->
+<app-projekt-urlap-modal
+  *ngIf="editOpen()"
+  [project]="project()"
+  [users]="users()"
+  (saved)="onProjectSaved($event)"
+  (closed)="editOpen.set(false)">
+</app-projekt-urlap-modal>
+
+<!-- ===== PROJEKT TÖRLÉS ===== -->
+<div class="backdrop" *ngIf="deleteOpen()" (click)="closeDelete()">
+  <div #delDialog class="modal" role="alertdialog" aria-modal="true" tabindex="-1"
+       aria-labelledby="del-title" (click)="$event.stopPropagation()">
+    <h2 id="del-title">Projekt törlése</h2>
+
+    <p *ngIf="deleteChecking()">Kapcsolatok ellenőrzése...</p>
+
+    <ng-container *ngIf="!deleteChecking() && !deleteError() && deleteBlocked()">
+      <div class="blocked" role="alert">
+        <p><strong>A projekt nem törölhető,</strong> mert még hivatkoznak rá. Előbb töröld vagy állítsd át ezeket:</p>
+        <ng-container *ngIf="blockedTasks().length > 0">
+          <p class="blocked-title">Feladatok ({{ blockedTasks().length }})</p>
+          <ul>
+            <li *ngFor="let t of blockedTasks(); trackBy: trackById">#{{ t.id }} {{ t.title }}</li>
+          </ul>
+        </ng-container>
+        <ng-container *ngIf="blockedMembers().length > 0">
+          <p class="blocked-title">Tagságok ({{ blockedMembers().length }})</p>
+          <ul>
+            <li *ngFor="let m of blockedMembers(); trackBy: trackById">{{ userName(m.userId) }} ({{ m.role }})</li>
+          </ul>
+        </ng-container>
+      </div>
+    </ng-container>
+
+    <p *ngIf="!deleteChecking() && !deleteError() && !deleteBlocked()">
+      Biztosan törlöd a(z) <strong>{{ project()?.name }}</strong> projektet? A művelet nem vonható vissza.
+    </p>
+
+    <p class="field-error" role="alert" *ngIf="deleteError()">{{ deleteError() }}</p>
+    <p class="saving" *ngIf="deleting()">Törlés folyamatban...</p>
+
+    <div class="modal-actions">
+      <button type="button" class="btn" (click)="closeDelete()" [disabled]="deleting()">
+        {{ deleteBlocked() ? 'Bezárás' : 'Mégse' }}
+      </button>
+      <button type="button" class="btn danger-btn" (click)="confirmDelete()"
+              *ngIf="!deleteBlocked()"
+              [disabled]="deleting() || deleteChecking() || !!deleteError()">
+        Törlés
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== TAG MODAL ===== -->
+<div class="backdrop" *ngIf="modalMode()" (click)="closeModal()">
+  <div #dialog class="modal" role="dialog" aria-modal="true" tabindex="-1"
+       aria-labelledby="modal-title" (click)="$event.stopPropagation()">
+
+    <ng-container *ngIf="modalMode() !== 'remove'; else removeBlock">
+      <h2 id="modal-title">
+        {{ modalMode() === 'add' ? 'Tag hozzáadása' : 'Tag szerkesztése' }}
+      </h2>
+
+      <form [formGroup]="form" (ngSubmit)="save()" novalidate>
+        <label for="userId">Felhasználó *</label>
+        <select id="userId" formControlName="userId">
+          <option [ngValue]="null">Válassz felhasználót</option>
+          <ng-container *ngIf="modalMode() === 'add'; else editUser">
+            <option *ngFor="let u of availableUsers(); trackBy: trackById" [ngValue]="u.id">
+              {{ u.name }}
+            </option>
+          </ng-container>
+          <ng-template #editUser>
+            <option *ngFor="let u of users(); trackBy: trackById" [ngValue]="u.id">
+              {{ u.name }}
+            </option>
+          </ng-template>
+        </select>
+        <p class="field-error" *ngIf="showError('userId')">Válassz egy felhasználót.</p>
+
+        <label for="role">Szerepkör a projektben *</label>
+        <input id="role" type="text" formControlName="role" autocomplete="off" />
+        <p class="field-error" *ngIf="showError('role')">
+          A szerepkör 2-40 karakter legyen (csak szóköz nem fogadható el).
+        </p>
+
+        <p class="field-error" role="alert" *ngIf="saveError()">{{ saveError() }}</p>
+        <p class="saving" *ngIf="saving()">Mentés folyamatban...</p>
+
+        <div class="modal-actions">
+          <button type="button" class="btn" (click)="closeModal()" [disabled]="saving()">Mégse</button>
+          <button type="submit" class="btn primary" [disabled]="saving()">Mentés</button>
+        </div>
+      </form>
+    </ng-container>
+
+    <ng-template #removeBlock>
+      <h2 id="modal-title">Tag eltávolítása</h2>
+      <p>
+        Biztosan eltávolítod
+        <strong>{{ userName(selectedMember()!.userId) }}</strong> nevű tagot a projektből?
+      </p>
+      <p class="field-error" role="alert" *ngIf="saveError()">{{ saveError() }}</p>
+      <p class="saving" *ngIf="saving()">Eltávolítás folyamatban...</p>
+      <div class="modal-actions">
+        <button type="button" class="btn" (click)="closeModal()" [disabled]="saving()">Mégse</button>
+        <button type="button" class="btn danger-btn" (click)="confirmRemove()" [disabled]="saving()">
+          Eltávolítás
+        </button>
+      </div>
+    </ng-template>
+  </div>
+</div>
