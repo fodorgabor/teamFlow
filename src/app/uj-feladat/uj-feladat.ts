@@ -1,4 +1,4 @@
-import { Component, OnInit, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy, ChangeDetectorRef, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -9,6 +9,7 @@ import { StatusService, Status } from '../../service/status-service';
 import { PriorityService, Priority } from '../../service/priority-service';
 import { UserService, User } from '../../service/user-service';
 import { ProjectsService, Project } from '../../service/projects-service';
+import { LabelService, Label } from '../../service/label-service';
 
 // Szám marad, ha az ID szám, különben szövegként megy tovább
 const asId = (v: number | string): number =>
@@ -23,6 +24,8 @@ const asId = (v: number | string): number =>
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class UjFeladat implements OnInit {
+  private labelService = inject(LabelService);
+
   // Űrlap mezők
   title = '';
   description = '';
@@ -32,14 +35,14 @@ export class UjFeladat implements OnInit {
   priorityId = 2; // Alapértelmezett: Normál
   dueDate = '';
   estimateHours = 1;
-  selectedLabelIds: number[] = [];
+  selectedLabelIds: (number | string)[] = [];
 
   // Lookup adatok
   statuses: Status[] = [];
   priorities: Priority[] = [];
   users: User[] = [];
   projects: Project[] = [];
-  labels: { id: number; name: string; color: string }[] = [];
+  labels: Label[] = [];
 
   loading = true;
   saving = false;
@@ -56,24 +59,19 @@ export class UjFeladat implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    // Ideiglenesen hardcode-olt címkék (később lehet service)
-    this.labels = [
-      { id: 1, name: 'Frontend', color: '#315CE8' },
-      { id: 2, name: 'UI', color: '#7C3AED' },
-      { id: 3, name: 'API', color: '#0F766E' },
-    ];
-
     forkJoin({
       statuses: this.statusService.getStatuses(),
       priorities: this.priorityService.getPriorities(),
       users: this.userService.getUsers(),
       projects: this.projectsService.getProjects(),
+      labels: this.labelService.getLabels(),
     }).subscribe({
       next: (data) => {
         this.statuses = data.statuses;
         this.priorities = data.priorities;
         this.users = data.users;
         this.projects = data.projects;
+        this.labels = data.labels;
         this.loading = false;
         this.cdr.markForCheck();
       },
@@ -86,7 +84,7 @@ export class UjFeladat implements OnInit {
     });
   }
 
-  toggleLabel(id: number): void {
+  toggleLabel(id: number | string): void {
     const index = this.selectedLabelIds.indexOf(id);
     if (index > -1) {
       this.selectedLabelIds.splice(index, 1);
@@ -95,7 +93,7 @@ export class UjFeladat implements OnInit {
     }
   }
 
-  isLabelSelected(id: number): boolean {
+  isLabelSelected(id: number | string): boolean {
     return this.selectedLabelIds.includes(id);
   }
 
@@ -130,7 +128,7 @@ export class UjFeladat implements OnInit {
       priorityId: asId(this.priorityId),
       dueDate: this.dueDate,
       estimateHours: this.estimateHours || 1,
-      labelIds: this.selectedLabelIds,
+      labelIds: this.selectedLabelIds as number[],
     };
 
     this.taskService.addTask(newTask).subscribe({
