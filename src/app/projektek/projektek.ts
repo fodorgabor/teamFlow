@@ -1,3 +1,4 @@
+
 import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
@@ -102,3 +103,4 @@ export class Projektek implements OnInit {
     return card.project.id;
   }
 }
+

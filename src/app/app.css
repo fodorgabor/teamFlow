@@ -1,227 +1,149 @@
-:host {
-  display: block;
-  min-height: 100vh;
-  color: #202b42;
-  font-family: Arial, Helvetica, sans-serif;
-}
-
-.app-shell {
+/* Alap layout */
+.app-layout {
   display: flex;
   min-height: 100vh;
-  background: #f3f6fb;
+  background: #f8fafc;
+  font-family: system-ui, -apple-system, sans-serif;
 }
 
+/* Oldalsó panel */
 .sidebar {
-  position: sticky;
-  top: 0;
-  display: flex;
-  flex: 0 0 clamp(116px, 16vw, 220px);
-  flex-direction: column;
-  box-sizing: border-box;
-  height: 100vh;
-  padding: clamp(10px, 1vw, 18px) clamp(8px, 1vw, 16px);
-  background: #fff;
-  border-right: 1px solid #e8edf5;
-}
-
-.brand {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  padding: 0 2px;
-  color: #202b42;
-  font-size: clamp(13px, 0.9vw, 17px);
-  font-weight: 700;
-  text-decoration: none;
-  white-space: nowrap;
-}
-
-.brand-mark {
-  display: grid;
-  width: clamp(21px, 1.6vw, 30px);
-  height: clamp(21px, 1.6vw, 30px);
-  place-items: center;
-  border-radius: 6px;
-  background: #345cf4;
-  color: #fff;
-  font-size: clamp(12px, 0.8vw, 15px);
-}
-
-.navigation {
+  width: 260px;
+  background: white;
+  border-right: 1px solid #e4e7ec;
   display: flex;
   flex-direction: column;
-  gap: clamp(4px, 0.4vw, 8px);
-  margin-top: clamp(24px, 2.4vw, 42px);
+  flex-shrink: 0;
 }
 
-.nav-heading {
-  margin: 0 2px 6px;
-  color: #66748f;
-  font-size: clamp(7px, 0.52vw, 10px);
-  font-weight: 700;
+.sidebar-header {
+  padding: 20px 20px 12px;
 }
 
-.nav-link {
+.logo {
   display: flex;
   align-items: center;
-  gap: 7px;
-  min-height: clamp(25px, 2.3vw, 40px);
-  padding: 0 clamp(6px, 0.7vw, 12px);
-  border-radius: 5px;
-  color: #697792;
-  font-size: clamp(9px, 0.72vw, 14px);
-  text-decoration: none;
-  white-space: nowrap;
+  gap: 10px;
 }
 
-.nav-link:hover {
-  background: #f4f6fb;
-}
-
-.nav-link.active {
-  background: #e9efff;
-  color: #315cf5;
-  font-weight: 700;
-}
-
-.nav-icon {
-  display: grid;
-  flex: 0 0 clamp(12px, 1vw, 18px);
-  width: clamp(12px, 1vw, 18px);
-  height: clamp(12px, 1vw, 18px);
-  place-items: center;
-  border-radius: 3px;
-  background: #edf1f6;
-  color: #66748f;
-  font-size: clamp(7px, 0.52vw, 10px);
-  font-weight: 700;
-}
-
-.nav-link.active .nav-icon {
-  background: #345cf4;
-  color: #fff;
-}
-
-.profile {
+.logo-icon {
+  width: 36px;
+  height: 36px;
+  background: #315CE8;
+  color: white;
+  border-radius: 10px;
   display: flex;
   align-items: center;
-  gap: 6px;
-  margin-top: auto;
-  padding: clamp(10px, 1vw, 18px) 2px 0;
-  border-top: 1px solid #e8edf5;
-}
-
-.avatar {
-  display: inline-grid;
-  flex: 0 0 clamp(20px, 1.5vw, 28px);
-  width: clamp(20px, 1.5vw, 28px);
-  height: clamp(20px, 1.5vw, 28px);
-  place-items: center;
-  border-radius: 50%;
-  background: #e9efff;
-  color: #315cf5;
-  font-size: clamp(7px, 0.52vw, 10px);
+  justify-content: center;
   font-weight: 700;
+  font-size: 1.1rem;
 }
 
-.profile-details {
-  display: flex;
-  min-width: 0;
-  flex-direction: column;
-  gap: 2px;
-  white-space: nowrap;
+.logo-text {
+  font-weight: 600;
+  font-size: 1.15rem;
+  color: #101828;
 }
 
-.profile-details strong {
-  font-size: clamp(8px, 0.62vw, 12px);
-}
-
-.profile-details small {
-  color: #73809a;
-  font-size: clamp(7px, 0.55vw, 11px);
-}
-
-.workspace {
-  min-width: 0;
+.sidebar-section {
+  padding: 8px 12px;
   flex: 1;
 }
 
-.topbar {
-  display: flex;
-  height: clamp(36px, 3.2vw, 58px);
-  box-sizing: border-box;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0 clamp(18px, 2.2vw, 40px);
-  background: #fff;
-  border-bottom: 1px solid #e8edf5;
+.section-title {
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: #98a2b3;
+  letter-spacing: 0.04em;
+  padding: 8px 12px 6px;
 }
 
-.breadcrumbs {
+/* Navigáció */
+.nav {
   display: flex;
-  align-items: center;
-  gap: 6px;
-  color: #71809c;
-  font-size: clamp(8px, 0.62vw, 12px);
+  flex-direction: column;
+  gap: 2px;
 }
 
-.breadcrumbs strong {
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  border-radius: 8px;
+  color: #344054;
+  text-decoration: none;
+  font-size: 0.95rem;
   font-weight: 500;
+  transition: background 0.15s;
 }
 
-.breadcrumb-divider {
-  color: #aab4c5;
+.nav-item:hover {
+  background: #f2f4f7;
 }
 
-.team-count {
-  padding: 4px 8px;
-  border-radius: 12px;
-  background: #eef1f6;
-  color: #66748f;
-  font-size: clamp(7px, 0.55vw, 11px);
-  font-weight: 700;
+.nav-item.active {
+  background: #eef4ff;
+  color: #315CE8;
 }
 
-.page-content {
-  padding: clamp(15px, 1.8vw, 34px) clamp(18px, 2.2vw, 40px) 24px;
+.nav-icon {
+  width: 28px;
+  height: 28px;
+  background: #f2f4f7;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #667085;
 }
 
-@media (max-width: 600px) {
-  .sidebar {
-    flex-basis: 58px;
-    align-items: center;
-    padding-right: 6px;
-    padding-left: 6px;
-  }
+.nav-item.active .nav-icon {
+  background: #dbe7ff;
+  color: #315CE8;
+}
 
-  .brand > span:last-child,
-  .nav-heading,
-  .nav-link > span:last-child,
-  .profile-details {
-    display: none;
-  }
+/* Felhasználó alul */
+.sidebar-footer {
+  padding: 16px;
+  border-top: 1px solid #e4e7ec;
+}
 
-  .navigation {
-    align-items: center;
-  }
+.user {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
 
-  .nav-link {
-    justify-content: center;
-    width: 30px;
-    padding: 0;
-  }
+.avatar {
+  width: 36px;
+  height: 36px;
+  background: #eef4ff;
+  color: #315CE8;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  font-size: 0.85rem;
+}
 
-  .profile {
-    padding-right: 0;
-    padding-left: 0;
-  }
+.user-name {
+  font-weight: 500;
+  font-size: 0.9rem;
+  color: #101828;
+}
 
-  .topbar {
-    padding-right: 12px;
-    padding-left: 12px;
-  }
+.user-role {
+  font-size: 0.8rem;
+  color: #667085;
+}
 
-  .page-content {
-    padding: 15px 12px 24px;
-  }
+/* Fő tartalom */
+.main-content {
+  flex: 1;
+  overflow-y: auto;
+  background: #f8fafc;
 }

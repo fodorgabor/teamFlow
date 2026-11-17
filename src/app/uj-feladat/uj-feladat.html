@@ -1,0 +1,123 @@
+<div class="page">
+  <div class="page-header">
+    <div>
+      <div class="breadcrumb">Feladatok / Új feladat</div>
+      <h1>Új feladat</h1>
+    </div>
+  </div>
+
+  @if (loading) {
+    <p>Betöltés...</p>
+  } @else {
+    <div class="form-card">
+      <h2 class="section-title">Feladat alapadatai</h2>
+
+      <!-- Cím -->
+      <div class="form-group">
+        <label>Feladat címe *</label>
+        <input
+          type="text"
+          placeholder="Pl. Reszponzív feladatlista"
+          [(ngModel)]="title"
+        />
+      </div>
+
+      <!-- Projekt + Felelős -->
+      <div class="form-row">
+        <div class="form-group">
+          <label>Projekt *</label>
+          <select [(ngModel)]="projectId">
+            <option [ngValue]="null">Válassz projektet</option>
+            @for (p of projects; track p.id) {
+              <option [ngValue]="p.id">{{ p.name }}</option>
+            }
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label>Felelős *</label>
+          <select [(ngModel)]="assigneeId">
+            <option [ngValue]="null">Válassz csapattagot</option>
+            @for (u of users; track u.id) {
+              <option [ngValue]="u.id">{{ u.name }}</option>
+            }
+          </select>
+        </div>
+      </div>
+
+      <!-- Állapot + Prioritás + Határidő -->
+      <div class="form-row three">
+        <div class="form-group">
+          <label>Állapot *</label>
+          <select [(ngModel)]="statusId">
+            @for (s of statuses; track s.id) {
+              <option [ngValue]="s.id">{{ s.name }}</option>
+            }
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label>Prioritás *</label>
+          <select [(ngModel)]="priorityId">
+            @for (p of priorities; track p.id) {
+              <option [ngValue]="p.id">{{ p.name }}</option>
+            }
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label>Határidő *</label>
+          <input type="date" [(ngModel)]="dueDate" />
+        </div>
+      </div>
+
+      <!-- Leírás + Becsült idő -->
+      <div class="form-row">
+        <div class="form-group" style="flex: 2">
+          <label>Leírás</label>
+          <textarea
+            rows="3"
+            placeholder="A feladat rövid leírása"
+            [(ngModel)]="description"
+          ></textarea>
+        </div>
+
+        <div class="form-group">
+          <label>Becsült idő órában *</label>
+          <input type="number" min="1" [(ngModel)]="estimateHours" />
+        </div>
+      </div>
+
+      <!-- Címkék -->
+      <div class="form-group">
+        <label>Címkék</label>
+        <div class="labels">
+          @for (label of labels; track label.id) {
+            <button
+              type="button"
+              class="label-chip"
+              [class.selected]="isLabelSelected(label.id)"
+              [style.--label-color]="label.color"
+              (click)="toggleLabel(label.id)"
+            >
+              {{ label.name }}
+            </button>
+          }
+        </div>
+      </div>
+
+      @if (errorMessage) {
+        <div class="error">{{ errorMessage }}</div>
+      }
+
+      <div class="form-actions">
+        <button type="button" class="btn-secondary" (click)="cancel()" [disabled]="saving">
+          Mégse
+        </button>
+        <button type="button" class="btn-primary" (click)="save()" [disabled]="saving">
+          {{ saving ? 'Mentés...' : 'Mentés' }}
+        </button>
+      </div>
+    </div>
+  }
+</div>

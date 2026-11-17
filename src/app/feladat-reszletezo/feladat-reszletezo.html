@@ -1,0 +1,156 @@
+@if (loading) {
+  <div class="page"><p>Betöltés...</p></div>
+} @else if (error || !task) {
+  <div class="page">
+    <p class="error">{{ error || 'A feladat nem található.' }}</p>
+    <a routerLink="/feladatok">Vissza a listához</a>
+  </div>
+} @else {
+  <div class="page">
+    <!-- Fejléc -->
+    <div class="page-header">
+      <div>
+        <div class="breadcrumb">
+          {{ project?.name || 'Projekt' }} / Csapatmunka
+        </div>
+        <h1>{{ task.title }}</h1>
+        <div class="task-id">#{{ task.id }} / {{ project?.name }}</div>
+      </div>
+      <div class="header-actions">
+        <a routerLink="/feladatok" class="btn-secondary">Vissza</a>
+        <button class="btn-danger" (click)="deleteTask()">Törlés</button>
+      </div>
+    </div>
+
+    @if (actionError) {
+      <p class="error">{{ actionError }}</p>
+    }
+
+    <div class="content-grid">
+      <!-- Bal oldal -->
+      <div class="main-column">
+        <!-- Leírás -->
+        <section class="card">
+          <h2>Leírás</h2>
+          <p class="description">{{ task.description || 'Nincs leírás.' }}</p>
+        </section>
+
+        <!-- Ellenőrzőlista -->
+        <section class="card">
+          <div class="card-header">
+            <h2>Ellenőrzőlista</h2>
+            <span class="count">{{ doneCount }} / {{ checklist.length }}</span>
+          </div>
+
+          <div class="checklist">
+            @for (item of checklist; track item.id) {
+              <div class="checklist-item" [class.done]="item.done">
+                <label>
+                  <input type="checkbox" [checked]="item.done" (change)="toggleChecklist(item)" />
+                  <span>{{ item.text }}</span>
+                </label>
+                <button class="icon-btn" (click)="deleteChecklistItem(item)">Törlés</button>
+              </div>
+            }
+          </div>
+
+          <div class="add-row">
+            <input
+              type="text"
+              placeholder="Új tétel..."
+              [(ngModel)]="newChecklistText"
+              (keyup.enter)="addChecklistItem()"
+            />
+            <button class="btn-small" (click)="addChecklistItem()">Hozzáadás</button>
+          </div>
+        </section>
+
+        <!-- Hozzászólások -->
+        <section class="card">
+          <div class="card-header">
+            <h2>Hozzászólások</h2>
+          </div>
+
+          <div class="comments">
+            @for (comment of comments; track comment.id) {
+              <div class="comment">
+                <div class="comment-author">{{ getUserName(comment.userId) }}</div>
+                <div class="comment-body">{{ comment.body }}</div>
+                <div class="comment-date">{{ comment.createdAt | date: 'yyyy.MM.dd. HH:mm' }}</div>
+              </div>
+            } @empty {
+              <p class="empty">Még nincsenek hozzászólások.</p>
+            }
+          </div>
+
+          <div class="add-row">
+            <input
+              type="text"
+              placeholder="Írj hozzászólást..."
+              [(ngModel)]="newComment"
+              (keyup.enter)="addComment()"
+            />
+            <button class="btn-small" (click)="addComment()">Küldés</button>
+          </div>
+        </section>
+      </div>
+
+      <!-- Jobb oldal - Adatpanel -->
+      <aside class="side-column">
+        <section class="card">
+          <h2>Feladat adatai</h2>
+
+          <div class="data-row">
+            <span class="label">Állapot</span>
+            <span class="value status" [style.color]="status?.color">
+              {{ status?.name }}
+            </span>
+          </div>
+
+          <div class="data-row">
+            <span class="label">Prioritás</span>
+            <span class="value">{{ priority?.name }}</span>
+          </div>
+
+          <div class="data-row">
+            <span class="label">Felelős</span>
+            <span class="value">{{ assignee?.name }}</span>
+          </div>
+
+          <div class="data-row">
+            <span class="label">Határidő</span>
+            <span class="value">{{ task.dueDate | date: 'yyyy.MM.dd.' }}</span>
+          </div>
+
+          <div class="data-row">
+            <span class="label">Becsült idő</span>
+            <span class="value">{{ task.estimateHours }} óra</span>
+          </div>
+
+          <div class="data-row">
+            <span class="label">Rögzített idő</span>
+            <span class="value">{{ loggedHoursText }}</span>
+          </div>
+        </section>
+
+        <!-- Időnapló -->
+        <section class="card">
+          <h2>Időnapló</h2>
+
+          <div class="time-entries">
+            @for (entry of timeEntries; track entry.id) {
+              <div class="time-entry">
+                <div class="time-main">
+                  <strong>{{ entry.minutes }} perc</strong> · {{ getUserName(entry.userId) }}
+                </div>
+                <div class="time-note">{{ entry.note }}</div>
+              </div>
+            } @empty {
+              <p class="empty">Még nincs rögzített idő.</p>
+            }
+          </div>
+        </section>
+      </aside>
+    </div>
+  </div>
+}
