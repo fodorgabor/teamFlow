@@ -1,58 +1,58 @@
-<div class="app-layout">
-  <!-- Oldalsó panel -->
-  <aside class="sidebar">
-    <div class="sidebar-header">
-      <div class="logo">
-        <div class="logo-icon">T</div>
-        <span class="logo-text">TeamFlow</span>
-      </div>
+<div class="shell" [class.menu-open]="menuOpen()">
+  <!-- Mobil felső sáv -->
+  <header class="topbar">
+    <button
+      type="button"
+      class="menu-btn"
+      aria-label="Menü megnyitása"
+      aria-controls="sidebar"
+      [attr.aria-expanded]="menuOpen()"
+      (click)="toggleMenu()"
+    >
+      ☰
+    </button>
+    <span class="topbar-title">TeamFlow</span>
+    <span class="avatar">KA</span>
+  </header>
+
+  <!-- Sötétített háttér nyitott menünél (mobil) -->
+  <div class="backdrop" (click)="closeMenu()"></div>
+
+  <!-- Oldalsáv -->
+  <aside class="sidebar" id="sidebar">
+    <div class="brand">
+      <span class="brand-logo">T</span>
+      <span class="brand-name">TeamFlow</span>
     </div>
 
-    <div class="sidebar-section">
-      <div class="section-title">MUNKATERÜLET</div>
+    <div class="nav-label">MUNKATERÜLET</div>
 
-      <nav class="nav">
-        <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }" class="nav-item">
-          <span class="nav-icon">A</span>
-          <span>Áttekintés</span>
+    <nav class="nav">
+      @for (item of navItems; track item.path) {
+        <a
+          class="nav-item"
+          [routerLink]="item.path"
+          routerLinkActive="active"
+          [routerLinkActiveOptions]="{ exact: item.exact }"
+          (click)="closeMenu()"
+        >
+          <span class="nav-icon">{{ item.icon }}</span>
+          <span>{{ item.label }}</span>
         </a>
+      }
+    </nav>
 
-        <a routerLink="/feladatok" routerLinkActive="active" class="nav-item">
-          <span class="nav-icon">F</span>
-          <span>Feladatok</span>
-        </a>
-
-        <a routerLink="/projektek" routerLinkActive="active" class="nav-item">
-          <span class="nav-icon">P</span>
-          <span>Projektek</span>
-        </a>
-
-        <a routerLink="/csapat" routerLinkActive="active" class="nav-item">
-          <span class="nav-icon">C</span>
-          <span>Csapat</span>
-        </a>
-
-        <a routerLink="/torzsadatok" routerLinkActive="active" class="nav-item">
-          <span class="nav-icon">T</span>
-          <span>Törzsadatok</span>
-        </a>
-      </nav>
-    </div>
-
-    <!-- Felhasználó alul -->
-    <div class="sidebar-footer">
-      <div class="user">
-        <div class="avatar">KA</div>
-        <div class="user-info">
-          <div class="user-name">Kiss Anna</div>
-          <div class="user-role">Csapattag</div>
-        </div>
+    <div class="sidebar-user">
+      <span class="avatar">KA</span>
+      <div>
+        <div class="user-name">Kiss Anna</div>
+        <div class="user-role">Csapattag</div>
       </div>
     </div>
   </aside>
 
-  <!-- Fő tartalom -->
-  <main class="main-content">
-    <router-outlet></router-outlet>
+  <!-- Oldal tartalma -->
+  <main class="content">
+    <router-outlet />
   </main>
 </div>

@@ -1,149 +1,219 @@
-/* Alap layout */
-.app-layout {
-  display: flex;
+/* ---------- Asztali elrendezés ---------- */
+.shell {
+  display: grid;
+  grid-template-columns: 260px minmax(0, 1fr);
   min-height: 100vh;
-  background: #f8fafc;
-  font-family: system-ui, -apple-system, sans-serif;
+  background: #f8f9fb;
 }
 
-/* Oldalsó panel */
+.topbar,
+.backdrop {
+  display: none;
+}
+
 .sidebar {
-  width: 260px;
-  background: white;
-  border-right: 1px solid #e4e7ec;
+  position: sticky;
+  top: 0;
+  align-self: start;
+  height: 100vh;
   display: flex;
   flex-direction: column;
-  flex-shrink: 0;
+  padding: 20px 12px;
+  background: #fff;
+  border-right: 1px solid #e4e7ec;
+  box-sizing: border-box;
 }
 
-.sidebar-header {
-  padding: 20px 20px 12px;
-}
-
-.logo {
+.brand {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 12px;
+  padding: 0 8px;
+  margin-bottom: 28px;
 }
 
-.logo-icon {
-  width: 36px;
-  height: 36px;
-  background: #315CE8;
-  color: white;
-  border-radius: 10px;
-  display: flex;
+.brand-logo {
+  display: inline-flex;
   align-items: center;
   justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background: #315ce8;
+  color: #fff;
   font-weight: 700;
-  font-size: 1.1rem;
 }
 
-.logo-text {
-  font-weight: 600;
-  font-size: 1.15rem;
+.brand-name {
+  font-size: 18px;
+  font-weight: 700;
   color: #101828;
 }
 
-.sidebar-section {
-  padding: 8px 12px;
-  flex: 1;
-}
-
-.section-title {
-  font-size: 0.7rem;
-  font-weight: 600;
-  color: #98a2b3;
+.nav-label {
+  padding: 0 12px;
+  margin-bottom: 8px;
+  font-size: 11px;
   letter-spacing: 0.04em;
-  padding: 8px 12px 6px;
+  color: #98a2b3;
 }
 
-/* Navigáció */
 .nav {
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: 4px;
 }
 
 .nav-item {
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 10px 12px;
-  border-radius: 8px;
+  min-height: 44px;
+  padding: 0 12px;
+  border-radius: 10px;
   color: #344054;
+  font-size: 14px;
+  font-weight: 600;
   text-decoration: none;
-  font-size: 0.95rem;
-  font-weight: 500;
-  transition: background 0.15s;
 }
 
 .nav-item:hover {
   background: #f2f4f7;
 }
 
-.nav-item.active {
-  background: #eef4ff;
-  color: #315CE8;
+.nav-item:focus-visible,
+.menu-btn:focus-visible {
+  outline: 2px solid #315ce8;
+  outline-offset: 2px;
 }
 
 .nav-icon {
-  width: 28px;
-  height: 28px;
-  background: #f2f4f7;
-  border-radius: 6px;
-  display: flex;
+  display: inline-flex;
   align-items: center;
   justify-content: center;
-  font-size: 0.8rem;
-  font-weight: 600;
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  background: #f2f4f7;
+  font-size: 12px;
+  font-weight: 700;
   color: #667085;
 }
 
+.nav-item.active {
+  background: #eaf0ff;
+  color: #315ce8;
+}
+
 .nav-item.active .nav-icon {
-  background: #dbe7ff;
-  color: #315CE8;
+  background: #dbe5ff;
+  color: #315ce8;
 }
 
-/* Felhasználó alul */
-.sidebar-footer {
-  padding: 16px;
-  border-top: 1px solid #e4e7ec;
-}
-
-.user {
+.sidebar-user {
   display: flex;
   align-items: center;
   gap: 12px;
+  margin-top: auto;
+  padding: 16px 8px 0;
+  border-top: 1px solid #e4e7ec;
 }
 
 .avatar {
-  width: 36px;
-  height: 36px;
-  background: #eef4ff;
-  color: #315CE8;
-  border-radius: 50%;
-  display: flex;
+  display: inline-flex;
   align-items: center;
   justify-content: center;
-  font-weight: 600;
-  font-size: 0.85rem;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: #eaf0ff;
+  color: #315ce8;
+  font-size: 11px;
+  font-weight: 700;
+  flex-shrink: 0;
 }
 
 .user-name {
-  font-weight: 500;
-  font-size: 0.9rem;
+  font-size: 13px;
+  font-weight: 700;
   color: #101828;
 }
 
 .user-role {
-  font-size: 0.8rem;
+  font-size: 12px;
   color: #667085;
 }
 
-/* Fő tartalom */
-.main-content {
-  flex: 1;
-  overflow-y: auto;
-  background: #f8fafc;
+.content {
+  min-width: 0;
+}
+
+/* ---------- Mobil elrendezés ---------- */
+@media (max-width: 768px) {
+  .shell {
+    display: block;
+  }
+
+  .topbar {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    position: sticky;
+    top: 0;
+    z-index: 20;
+    height: 56px;
+    padding: 0 16px;
+    background: #fff;
+    border-bottom: 1px solid #e4e7ec;
+  }
+
+  .menu-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    margin-left: -10px;
+    border: none;
+    border-radius: 8px;
+    background: none;
+    font-size: 22px;
+    color: #101828;
+    cursor: pointer;
+  }
+
+  .topbar-title {
+    flex: 1;
+    font-size: 18px;
+    font-weight: 700;
+    color: #101828;
+  }
+
+  /* Az oldalsáv alapból rejtve, a menügombbal csúszik be */
+  .sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    z-index: 40;
+    width: 280px;
+    max-width: 85vw;
+    height: auto;
+    transform: translateX(-100%);
+    visibility: hidden;
+    transition: transform 0.2s ease, visibility 0.2s;
+  }
+
+  .menu-open .sidebar {
+    transform: translateX(0);
+    visibility: visible;
+  }
+
+  .menu-open .backdrop {
+    display: block;
+    position: fixed;
+    inset: 0;
+    z-index: 30;
+    background: rgba(16, 24, 40, 0.4);
+  }
 }

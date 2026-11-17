@@ -51,10 +51,11 @@
     </div>
   </div>
 
-  <!-- Táblázat -->
   @if (loading) {
     <p class="loading">Betöltés...</p>
   } @else {
+
+    <!-- Táblázat (asztali nézet) -->
     <div class="table-wrapper">
       <table class="task-table">
         <thead>
@@ -97,6 +98,34 @@
           }
         </tbody>
       </table>
+    </div>
+
+    <!-- Kártyák (mobil nézet) -->
+    <div class="task-cards">
+      @for (task of filteredTasks; track task.id) {
+        <article class="task-card">
+          <div class="task-title">{{ task.title }}</div>
+          <div class="task-meta">#{{ task.id }} · {{ task.projectName }}</div>
+
+          <div class="card-row">
+            <span
+              class="status-badge"
+              [style.background-color]="task.statusColor + '20'"
+              [style.color]="task.statusColor"
+            >
+              {{ task.statusName }}
+            </span>
+            <span class="card-assignee">{{ task.assigneeName }}</span>
+          </div>
+
+          <div class="card-footer">
+            <span class="card-date">{{ task.dueDate | date: 'yyyy.MM.dd.' }}</span>
+            <a [routerLink]="['/feladatok', task.id]" class="link">Megnyitás</a>
+          </div>
+        </article>
+      } @empty {
+        <p class="empty">Nincsenek feladatok a szűrési feltételeknek megfelelően.</p>
+      }
     </div>
 
     <div class="table-footer">
