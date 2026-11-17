@@ -1,6 +1,6 @@
-import { Injectable, inject } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, map, shareReplay } from 'rxjs';
+import { Observable, map } from 'rxjs';
 
 export interface Priority {
   id: number;
@@ -12,16 +12,12 @@ export interface Priority {
   providedIn: 'root'
 })
 export class PriorityService {
-  private readonly http = inject(HttpClient);
-  private readonly apiUrl = 'http://localhost:3000/priorities';
+  private apiUrl = 'http://localhost:3000/priorities';
 
-  // Egyszer kérjük le, utána mindenki a gyorsítótárazott értéket kapja
-  private readonly priorities$ = this.http
-    .get<Priority[]>(this.apiUrl)
-    .pipe(shareReplay({ bufferSize: 1, refCount: false }));
+  constructor(private http: HttpClient) {}
 
   getPriorities(): Observable<Priority[]> {
-    return this.priorities$;
+    return this.http.get<Priority[]>(this.apiUrl);
   }
 
   // Alias, ha valahol még a régi név szerepel
@@ -31,7 +27,7 @@ export class PriorityService {
 
   // Szint szerint rendezve, alapból a legmagasabb elöl
   getSorted(order: 'asc' | 'desc' = 'desc'): Observable<Priority[]> {
-    return this.priorities$.pipe(
+    return this.getPriorities().pipe(
       map(list =>
         [...list].sort((a, b) =>
           order === 'asc' ? a.level - b.level : b.level - a.level
@@ -40,16 +36,28 @@ export class PriorityService {
     );
   }
 
-  getById(id: number): Observable<Priority | undefined> {
-    return this.priorities$.pipe(
-      map(list => list.find(p => p.id === id))
+  getById(id: number | string): Observable<Priority | undefined> {
+    return this.getPriorities().pipe(
+      map(list => list.find(p => String(p.id) === String(id)))
     );
   }
 
-  // id -> Priority térkép, a feladatlistában a priorityId feloldásához
-  getMap(): Observable<Map<number, Priority>> {
-    return this.priorities$.pipe(
-      map(list => new Map(list.map(p => [p.id, p] as const)))
+  // id (szövegként) -> Priority térkép, használat: map.get(String(task.priorityId))
+  getMap(): Observable<Map<string, Priority>> {
+    return this.getPriorities().pipe(
+      map(list => new Map(list.map(p => [String(p.id), p] as const)))
     );
+  }
+
+  addPriority(priority: Omit<Priority, 'id'>): Observable<Priority> {
+    return this.http.post<Priority>(this.apiUrl, priority);
+  }
+
+  updatePriority(priority: Priority): Observable<Priority> {
+    return this.http.put<Priority>(`${this.apiUrl}/${priority.id}`, priority);
+  }
+
+  deletePriority(id: number | string): Observable<void> {
+    return this.http.delete<void>(`${this.apiUrl}/${id}`);
   }
 }

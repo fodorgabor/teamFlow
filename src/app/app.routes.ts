@@ -15,5 +15,4 @@ export const routes: Routes = [
   { path: 'feladatok/:id', component: FeladatReszletezo },
   { path: 'projektek', component: Projektek },
   { path: 'torzsadatok', component: Torzsadatok },
-  {path: 'projektek/:id', component: ProjektReszletezo}
 ];

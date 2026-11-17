@@ -21,4 +21,16 @@ export class StatusService {
   getStatuses(): Observable<Status[]> {
     return this.http.get<Status[]>(this.apiUrl);
   }
+
+  addStatus(status: Omit<Status, 'id'>): Observable<Status> {
+    return this.http.post<Status>(this.apiUrl, status);
+  }
+
+  updateStatus(status: Status): Observable<Status> {
+    return this.http.put<Status>(`${this.apiUrl}/${status.id}`, status);
+  }
+
+  deleteStatus(id: number | string): Observable<void> {
+    return this.http.delete<void>(`${this.apiUrl}/${id}`);
+  }
 }
