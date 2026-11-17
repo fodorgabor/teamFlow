@@ -1,1 +1,107 @@
-<p>feladatok works!</p>
+<div class="page">
+  <!-- Fejléc -->
+  <div class="page-header">
+    <div>
+      <h1>Feladatok</h1>
+      <p class="subtitle">{{ subtitle }}</p>
+    </div>
+    <a routerLink="/feladatok/new" class="btn-primary">+ Új feladat</a>
+  </div>
+
+  <!-- Szűrők -->
+  <div class="filters">
+    <div class="filter-group">
+      <label>Keresés</label>
+      <input
+        type="text"
+        placeholder="Keresés a feladatok között..."
+        [(ngModel)]="searchTerm"
+        (ngModelChange)="applyFilters()"
+      />
+    </div>
+
+    <div class="filter-group">
+      <label>Állapot</label>
+      <select [(ngModel)]="statusFilter" (ngModelChange)="applyFilters()">
+        <option value="all">Minden állapot</option>
+        @for (status of statuses; track status.id) {
+          <option [value]="status.id">{{ status.name }}</option>
+        }
+      </select>
+    </div>
+
+    <div class="filter-group">
+      <label>Felelős</label>
+      <select [(ngModel)]="assigneeFilter" (ngModelChange)="applyFilters()">
+        <option value="all">Mindenki</option>
+        @for (user of users; track user.id) {
+          <option [value]="user.id">{{ user.name }}</option>
+        }
+      </select>
+    </div>
+
+    <div class="filter-group">
+      <label>Projekt</label>
+      <select [(ngModel)]="projectFilter" (ngModelChange)="applyFilters()">
+        <option value="all">Mindegyik</option>
+        @for (project of projects; track project.id) {
+          <option [value]="project.id">{{ project.name }}</option>
+        }
+      </select>
+    </div>
+  </div>
+
+  <!-- Táblázat -->
+  @if (loading) {
+    <p class="loading">Betöltés...</p>
+  } @else {
+    <div class="table-wrapper">
+      <table class="task-table">
+        <thead>
+          <tr>
+            <th>FELADAT</th>
+            <th>ÁLLAPOT</th>
+            <th>FELELŐS</th>
+            <th>HATÁRIDŐ</th>
+            <th>MŰVELET</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (task of filteredTasks; track task.id) {
+            <tr>
+              <td>
+                <div class="task-title">{{ task.title }}</div>
+                <div class="task-meta">
+                  #{{ task.id }} · {{ task.projectName }}
+                </div>
+              </td>
+              <td>
+                <span
+                  class="status-badge"
+                  [style.background-color]="task.statusColor + '20'"
+                  [style.color]="task.statusColor"
+                >
+                  {{ task.statusName }}
+                </span>
+              </td>
+              <td>{{ task.assigneeName }}</td>
+              <td>{{ task.dueDate | date: 'MM.dd.' }}</td>
+              <td>
+                <a [routerLink]="['/feladatok', task.id]" class="link">Megnyitás</a>
+              </td>
+            </tr>
+          } @empty {
+            <tr>
+              <td colspan="5" class="empty">Nincsenek feladatok a szűrési feltételeknek megfelelően.</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+
+    <div class="table-footer">
+      <span>{{ filteredTasks.length }} / {{ tasks.length }} feladat</span>
+      <span class="sort-info">Rendezés: azonosító</span>
+    </div>
+  }
+</div>

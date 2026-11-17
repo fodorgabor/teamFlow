@@ -1,8 +1,58 @@
-<h1>TeamFlow</h1>
-<button [routerLink]="['/']">Áttekintés</button>
-<button [routerLink]="['csapat']">Csapat</button>
-<button [routerLink]="['feladatok']">Feladatok</button>
-<button [routerLink]="['projektek']">Projektek</button>
-<button [routerLink]="['torzsadatok']">Törzsadatok</button>
+<div class="app-layout">
+  <!-- Oldalsó panel -->
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <div class="logo">
+        <div class="logo-icon">T</div>
+        <span class="logo-text">TeamFlow</span>
+      </div>
+    </div>
 
-<router-outlet></router-outlet>
+    <div class="sidebar-section">
+      <div class="section-title">MUNKATERÜLET</div>
+
+      <nav class="nav">
+        <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }" class="nav-item">
+          <span class="nav-icon">A</span>
+          <span>Áttekintés</span>
+        </a>
+
+        <a routerLink="/feladatok" routerLinkActive="active" class="nav-item">
+          <span class="nav-icon">F</span>
+          <span>Feladatok</span>
+        </a>
+
+        <a routerLink="/projektek" routerLinkActive="active" class="nav-item">
+          <span class="nav-icon">P</span>
+          <span>Projektek</span>
+        </a>
+
+        <a routerLink="/csapat" routerLinkActive="active" class="nav-item">
+          <span class="nav-icon">C</span>
+          <span>Csapat</span>
+        </a>
+
+        <a routerLink="/torzsadatok" routerLinkActive="active" class="nav-item">
+          <span class="nav-icon">T</span>
+          <span>Törzsadatok</span>
+        </a>
+      </nav>
+    </div>
+
+    <!-- Felhasználó alul -->
+    <div class="sidebar-footer">
+      <div class="user">
+        <div class="avatar">KA</div>
+        <div class="user-info">
+          <div class="user-name">Kiss Anna</div>
+          <div class="user-role">Csapattag</div>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Fő tartalom -->
+  <main class="main-content">
+    <router-outlet></router-outlet>
+  </main>
+</div>
