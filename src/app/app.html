@@ -1,8 +1,42 @@
-<h1>TeamFlow</h1>
-<button [routerLink]="['/']">Áttekintés</button>
-<button [routerLink]="['csapat']">Csapat</button>
-<button [routerLink]="['feladatok']">Feladatok</button>
-<button [routerLink]="['projektek']">Projektek</button>
-<button [routerLink]="['torzsadatok']">Törzsadatok</button>
+<div class="app-shell">
+  <aside class="sidebar">
+    <a class="brand" [routerLink]="['/']" aria-label="TeamFlow kezdőlap">
+      <span class="brand-mark">T</span>
+      <span>TeamFlow</span>
+    </a>
 
-<router-outlet></router-outlet>
+    <nav class="navigation" aria-label="Fő navigáció">
+      <span class="nav-heading">MUNKATERÜLET</span>
+      <a class="nav-link" [routerLink]="['/']" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
+        <span class="nav-icon">A</span><span>Áttekintés</span>
+      </a>
+      <a class="nav-link" [routerLink]="['/feladatok']" routerLinkActive="active">
+        <span class="nav-icon">F</span><span>Feladatok</span>
+      </a>
+      <a class="nav-link" [routerLink]="['/projektek']" routerLinkActive="active">
+        <span class="nav-icon">P</span><span>Projektek</span>
+      </a>
+      <a class="nav-link" [routerLink]="['/csapat']" routerLinkActive="active">
+        <span class="nav-icon">C</span><span>Csapat</span>
+      </a>
+      <a class="nav-link" [routerLink]="['/torzsadatok']" routerLinkActive="active">
+        <span class="nav-icon">T</span><span>Törzsadatok</span>
+      </a>
+    </nav>
+
+    <div class="profile">
+      <span class="avatar profile-avatar">KA</span>
+      <span class="profile-details"><strong>Kiss Anna</strong><small>Csapattag</small></span>
+    </div>
+  </aside>
+
+  <div class="workspace">
+    <header class="topbar">
+      <div class="breadcrumbs"><span>Frontend projekt</span><span class="breadcrumb-divider">/</span><strong>Csapatmunka</strong></div>
+      <span class="team-count">2 csapattag</span>
+    </header>
+    <main class="page-content">
+      <router-outlet></router-outlet>
+    </main>
+  </div>
+</div>

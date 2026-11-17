@@ -4,6 +4,7 @@ import { Torzsadatok } from './torzsadatok/torzsadatok';
 import { Feladatok } from './feladatok/feladatok';
 import { Csapat } from './csapat/csapat';
 import { Attekintes } from './attekintes/attekintes';
+import { ProjektReszletezo } from './projektek/projekt-reszletezo/projekt-reszletezo';
 
 export const routes: Routes = [
     {path: '', component: Attekintes},
@@ -11,4 +12,6 @@ export const routes: Routes = [
     {path: 'feladatok', component: Feladatok},
     {path: 'projektek', component: Projektek},
     {path: 'torzsadatok', component: Torzsadatok},
+    {path: 'projektek', component: Projektek},
+    {path: 'projektek/:id', component: ProjektReszletezo}
 ];
