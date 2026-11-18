@@ -3,16 +3,17 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Observer, forkJoin } from 'rxjs';
 
-import { TaskService, Task } from '../../service/task-service';
-import { LabelService, Label } from '../../service/label-service';
-import { StatusService, Status } from '../../service/status-service';
-import { PriorityService, Priority } from '../../service/priority-service';
+import { TaskService } from '../core/api/task-service';
+import { LabelService } from '../core/api/label-service';
+import { StatusService } from '../core/api/status-service';
+import { PriorityService } from '../core/api/priority-service';
+import { Task } from '../models/task.model';
+import { Label } from '../models/label.model';
+import { Status } from '../models/status.model';
+import { Priority } from '../models/priority.model';
+import { sameId } from '../core/utils/id';
 
 type Tab = 'labels' | 'statuses' | 'priorities';
-
-// Az ID lehet szám (1) vagy szöveg ("xVd4Mp6UZNA"), ezért szövegként hasonlítunk
-const sameId = (a: number | string, b: number | string): boolean =>
-  String(a) === String(b);
 
 @Component({
   selector: 'app-torzsadatok',
@@ -54,10 +55,10 @@ export class Torzsadatok implements OnInit {
 
   private loadAll(): void {
     forkJoin({
-      tasks: this.taskService.getTasks(),
-      labels: this.labelService.getLabels(),
-      statuses: this.statusService.getStatuses(),
-      priorities: this.priorityService.getPriorities(),
+      tasks: this.taskService.list(),
+      labels: this.labelService.list(),
+      statuses: this.statusService.list(),
+      priorities: this.priorityService.list(),
     }).subscribe({
       next: (data) => {
         this.tasks = data.tasks;
@@ -191,14 +192,13 @@ export class Torzsadatok implements OnInit {
     const color = this.form.color;
 
     if (this.editingId === null) {
-      this.labelService.addLabel({ name, color }).subscribe(
+      this.labelService.create({ name, color }).subscribe(
         this.handle<Label>((created) => {
           this.labels = [...this.labels, created];
         })
       );
     } else {
-      const updated: Label = { id: this.editingId as number, name, color };
-      this.labelService.updateLabel(updated).subscribe(
+      this.labelService.update(this.editingId, { name, color }).subscribe(
         this.handle<Label>((saved) => {
           this.labels = this.labels.map((l) => (sameId(l.id, saved.id) ? saved : l));
         })
@@ -215,14 +215,13 @@ export class Torzsadatok implements OnInit {
     };
 
     if (this.editingId === null) {
-      this.statusService.addStatus(data).subscribe(
+      this.statusService.create(data).subscribe(
         this.handle<Status>((created) => {
           this.statuses = [...this.statuses, created].sort((a, b) => a.order - b.order);
         })
       );
     } else {
-      const updated: Status = { id: this.editingId as number, ...data };
-      this.statusService.updateStatus(updated).subscribe(
+      this.statusService.update(this.editingId, data).subscribe(
         this.handle<Status>((saved) => {
           this.statuses = this.statuses
             .map((s) => (sameId(s.id, saved.id) ? saved : s))
@@ -236,14 +235,13 @@ export class Torzsadatok implements OnInit {
     const level = Number(this.form.level) || 1;
 
     if (this.editingId === null) {
-      this.priorityService.addPriority({ name, level }).subscribe(
+      this.priorityService.create({ name, level }).subscribe(
         this.handle<Priority>((created) => {
           this.priorities = [...this.priorities, created].sort((a, b) => a.level - b.level);
         })
       );
     } else {
-      const updated: Priority = { id: this.editingId as number, name, level };
-      this.priorityService.updatePriority(updated).subscribe(
+      this.priorityService.update(this.editingId, { name, level }).subscribe(
         this.handle<Priority>((saved) => {
           this.priorities = this.priorities
             .map((p) => (sameId(p.id, saved.id) ? saved : p))
@@ -277,7 +275,7 @@ export class Torzsadatok implements OnInit {
     if (this.blockedByUsage(label.name, used)) return;
     if (!confirm(`Biztosan törölni szeretnéd: ${label.name}?`)) return;
 
-    this.labelService.deleteLabel(label.id).subscribe({
+    this.labelService.remove(label.id).subscribe({
       next: () => {
         this.labels = this.labels.filter((l) => !sameId(l.id, label.id));
         this.cdr.markForCheck();
@@ -291,7 +289,7 @@ export class Torzsadatok implements OnInit {
     if (this.blockedByUsage(status.name, used)) return;
     if (!confirm(`Biztosan törölni szeretnéd: ${status.name}?`)) return;
 
-    this.statusService.deleteStatus(status.id).subscribe({
+    this.statusService.remove(status.id).subscribe({
       next: () => {
         this.statuses = this.statuses.filter((s) => !sameId(s.id, status.id));
         this.cdr.markForCheck();
@@ -305,7 +303,7 @@ export class Torzsadatok implements OnInit {
     if (this.blockedByUsage(priority.name, used)) return;
     if (!confirm(`Biztosan törölni szeretnéd: ${priority.name}?`)) return;
 
-    this.priorityService.deletePriority(priority.id).subscribe({
+    this.priorityService.remove(priority.id).subscribe({
       next: () => {
         this.priorities = this.priorities.filter((p) => !sameId(p.id, priority.id));
         this.cdr.markForCheck();

@@ -4,12 +4,17 @@ import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { forkJoin } from 'rxjs';
 
-import { TaskService } from '../../service/task-service';
-import { StatusService, Status } from '../../service/status-service';
-import { PriorityService, Priority } from '../../service/priority-service';
-import { UserService, User } from '../../service/user-service';
-import { ProjectsService, Project } from '../../service/projects-service';
-import { LabelService, Label } from '../../service/label-service';
+import { TaskService } from '../core/api/task-service';
+import { StatusService } from '../core/api/status-service';
+import { PriorityService } from '../core/api/priority-service';
+import { UserService } from '../core/api/user-service';
+import { ProjectService } from '../core/api/project.service';
+import { LabelService } from '../core/api/label-service';
+import { Status } from '../models/status.model';
+import { Priority } from '../models/priority.model';
+import { User } from '../models/user.model';
+import { Project } from '../models/project.model';
+import { Label } from '../models/label.model';
 
 // Szám marad, ha az ID szám, különben szövegként megy tovább
 const asId = (v: number | string): number =>
@@ -53,18 +58,18 @@ export class UjFeladat implements OnInit {
     private statusService: StatusService,
     private priorityService: PriorityService,
     private userService: UserService,
-    private projectsService: ProjectsService,
+    private projectsService: ProjectService,
     private router: Router,
     private cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit(): void {
     forkJoin({
-      statuses: this.statusService.getStatuses(),
-      priorities: this.priorityService.getPriorities(),
-      users: this.userService.getUsers(),
-      projects: this.projectsService.getProjects(),
-      labels: this.labelService.getLabels(),
+      statuses: this.statusService.list(),
+      priorities: this.priorityService.list(),
+      users: this.userService.list(),
+      projects: this.projectsService.list(),
+      labels: this.labelService.list(),
     }).subscribe({
       next: (data) => {
         this.statuses = data.statuses;
@@ -131,7 +136,7 @@ export class UjFeladat implements OnInit {
       labelIds: this.selectedLabelIds as number[],
     };
 
-    this.taskService.addTask(newTask).subscribe({
+    this.taskService.create(newTask).subscribe({
       next: (created) => {
         this.router.navigate(['/feladatok', created.id]);
       },

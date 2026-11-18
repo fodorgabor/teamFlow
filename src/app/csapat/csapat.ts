@@ -15,6 +15,7 @@ import { Task } from '../models/task.model';
 import { TimeEntry } from '../models/time-entry.model';
 import { User } from '../models/user.model';
 import { FelhasznaloUrlapModal } from './felhasznalo-urlap-modal/felhasznalo-urlap-modal';
+import { sameId } from '../core/utils/id';
 
 interface DeleteBlockers {
   projects: Project[];
@@ -137,11 +138,11 @@ export class Csapat implements OnInit {
       .subscribe({
         next: ({ projects, projectMembers, tasks, comments, timeEntries }) => {
           this.deleteBlockers.set({
-            projects: projects.filter(project => project.ownerId === user.id),
-            projectMembers: projectMembers.filter(member => member.userId === user.id),
-            tasks: tasks.filter(task => task.assigneeId === user.id),
-            comments: comments.filter(comment => comment.userId === user.id),
-            timeEntries: timeEntries.filter(entry => entry.userId === user.id)
+            projects: projects.filter(project => sameId(project.ownerId, user.id)),
+            projectMembers: projectMembers.filter(member => sameId(member.userId, user.id)),
+            tasks: tasks.filter(task => sameId(task.assigneeId, user.id)),
+            comments: comments.filter(comment => sameId(comment.userId, user.id)),
+            timeEntries: timeEntries.filter(entry => sameId(entry.userId, user.id))
           });
         },
         error: () => {
@@ -190,11 +191,11 @@ export class Csapat implements OnInit {
     return name.trim().split(/\s+/).filter(Boolean).map(part => part[0]).join('').toUpperCase();
   }
 
-  projectName(id: number): string {
+  projectName(id: number | string): string {
     return `Projekt #${id}`;
   }
 
-  trackById(index: number, item: { id: number }): number {
+  trackById(index: number, item: { id: number | string }): number | string {
     return item.id;
   }
 

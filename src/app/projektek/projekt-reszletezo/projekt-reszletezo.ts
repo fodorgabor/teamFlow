@@ -15,6 +15,7 @@ import { Status } from '../../models/status.model';
 import { User } from '../../models/user.model';
 import { ProjectMember } from '../../models/projectMember.model';
 import { ProjektUrlapModal } from '../projekt-urlap-modal/projekt-urlap-modal';
+import { sameId } from '../../core/utils/id';
 
 type ModalMode = 'add' | 'edit' | 'remove';
 
@@ -78,8 +79,8 @@ export class ProjektReszletezo implements OnInit {
   private lastFocused: HTMLElement | null = null;
 
   availableUsers = computed(() => {
-    const taken = new Set(this.members().map(m => m.userId));
-    return this.users().filter(u => !taken.has(u.id));
+    const taken = this.members().map(m => m.userId);
+    return this.users().filter(u => !taken.some(id => sameId(id, u.id)));
   });
 
   deleteBlocked = computed(
@@ -111,7 +112,7 @@ export class ProjektReszletezo implements OnInit {
       next: ({ project, members, tasks, statuses, users }) => {
         this.project.set(project);
         this.members.set(members);
-        this.tasks.set(tasks.filter(t => t.projectId === id));
+        this.tasks.set(tasks.filter(t => sameId(t.projectId, id)));
         this.statuses.set(statuses);
         this.users.set(users);
         this.loading.set(false);
@@ -158,8 +159,8 @@ export class ProjektReszletezo implements OnInit {
       .pipe(finalize(() => this.deleteChecking.set(false)))
       .subscribe({
         next: ({ tasks, members }) => {
-          this.blockedTasks.set(tasks.filter(t => t.projectId === this.projectId));
-          this.blockedMembers.set(members.filter(m => m.projectId === this.projectId));
+          this.blockedTasks.set(tasks.filter(t => sameId(t.projectId, this.projectId)));
+          this.blockedMembers.set(members.filter(m => sameId(m.projectId, this.projectId)));
         },
         error: () => this.deleteError.set('A kapcsolatok ellenőrzése nem sikerült, ezért a törlés most nem indítható.')
       });
@@ -195,7 +196,7 @@ export class ProjektReszletezo implements OnInit {
 
   openEdit(member: ProjectMember): void {
     this.prepare('edit', member);
-    this.form.reset({ userId: member.userId, role: member.role });
+    this.form.reset({ userId: Number(member.userId), role: member.role });
     this.form.controls.userId.disable();
   }
 
@@ -234,7 +235,7 @@ export class ProjektReszletezo implements OnInit {
 
     if (this.modalMode() === 'add') {
       const userId = Number(this.form.controls.userId.value);
-      const exists = this.members().some(m => m.userId === userId);
+      const exists = this.members().some(m => sameId(m.userId, userId));
       if (exists) {
         this.saving.set(false);
         this.saveError.set('Ez a felhasználó már tagja a projektnek.');
@@ -294,19 +295,19 @@ export class ProjektReszletezo implements OnInit {
     return c.invalid && (c.touched || this.submitted());
   }
 
-  userName(id: number): string {
-    return this.users().find(u => u.id === id)?.name ?? '–';
+  userName(id: number | string): string {
+    return this.users().find(u => sameId(u.id, id))?.name ?? '–';
   }
 
-  initials(id: number): string {
+  initials(id: number | string): string {
     return this.userName(id).split(' ').map(p => p[0]).join('');
   }
 
-  statusOf(id: number): Status | undefined {
-    return this.statuses().find(s => s.id === id);
+  statusOf(id: number | string): Status | undefined {
+    return this.statuses().find(s => sameId(s.id, id));
   }
 
-  trackById(index: number, item: { id: number }): number {
+  trackById(index: number, item: { id: number | string }): number | string {
     return item.id;
   }
 }

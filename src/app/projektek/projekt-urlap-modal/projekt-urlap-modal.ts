@@ -63,7 +63,7 @@ export class ProjektUrlapModal implements OnInit, AfterViewInit, OnDestroy {
     this.lastFocused = document.activeElement as HTMLElement | null;
     if (this.project) {
       const { name, description, ownerId, status, startDate, dueDate } = this.project;
-      this.form.patchValue({ name, description, ownerId, status, startDate, dueDate });
+      this.form.patchValue({ name, description, ownerId: Number(ownerId), status, startDate, dueDate });
     }
   }
 
@@ -120,7 +120,7 @@ export class ProjektUrlapModal implements OnInit, AfterViewInit, OnDestroy {
       (this.form.controls.dueDate.touched || this.submitted());
   }
 
-  trackById(index: number, item: { id: number }): number {
+  trackById(index: number, item: { id: number | string }): number | string {
     return item.id;
   }
 }

@@ -10,6 +10,7 @@ import { UserService } from '../core/api/user-service';
 import { Project } from '../models/project.model';
 import { User } from '../models/user.model';
 import { ProjektUrlapModal } from './projekt-urlap-modal/projekt-urlap-modal';
+import { sameId } from '../core/utils/id';
 
 interface ProjectCard {
   project: Project;
@@ -63,13 +64,13 @@ export class Projektek implements OnInit {
 
         this.cards.set(
           projects.map(project => {
-            const projectTasks = tasks.filter(t => t.projectId === project.id);
-            const done = projectTasks.filter(t => t.statusId === doneId).length;
+            const projectTasks = tasks.filter(t => sameId(t.projectId, project.id));
+            const done = projectTasks.filter(t => sameId(t.statusId, doneId)).length;
             const total = projectTasks.length;
 
             const initials = members
-              .filter(m => m.projectId === project.id)
-              .map(m => users.find(u => u.id === m.userId))
+              .filter(m => sameId(m.projectId, project.id))
+              .map(m => users.find(u => sameId(u.id, m.userId)))
               .filter(u => !!u)
               .map(u => u!.name.split(' ').map(part => part[0]).join(''));
 
@@ -98,7 +99,7 @@ export class Projektek implements OnInit {
     this.load();
   }
 
-  trackById(index: number, card: ProjectCard): number {
+  trackById(index: number, card: ProjectCard): number | string {
     return card.project.id;
   }
 }

@@ -1,7 +1,7 @@
 export interface TimeEntry {
-  id: number;
-  taskId: number;
-  userId: number;
+  id: number | string;
+  taskId: number | string;
+  userId: number | string;
   minutes: number;
   date: string;
   note: string;

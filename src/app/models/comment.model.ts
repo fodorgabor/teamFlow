@@ -1,7 +1,7 @@
 export interface Comment {
-  id: number;
-  taskId: number;
-  userId: number;
+  id: number | string;
+  taskId: number | string;
+  userId: number | string;
   body: string;
   createdAt: string;
 }

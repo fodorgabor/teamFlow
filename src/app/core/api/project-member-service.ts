@@ -15,7 +15,7 @@ export class ProjectMemberService {
     return this.http.get<ProjectMember[]>(this.url, { params });
   }
 
-  getById(id: number): Observable<ProjectMember> {
+  getById(id: number | string): Observable<ProjectMember> {
     return this.http.get<ProjectMember>(`${this.url}/${id}`);
   }
 
@@ -23,11 +23,11 @@ export class ProjectMemberService {
     return this.http.post<ProjectMember>(this.url, data);
   }
 
-  update(id: number, data: Partial<ProjectMemberWrite>): Observable<ProjectMember> {
+  update(id: number | string, data: Partial<ProjectMemberWrite>): Observable<ProjectMember> {
     return this.http.patch<ProjectMember>(`${this.url}/${id}`, data);
   }
 
-  remove(id: number): Observable<void> {
+  remove(id: number | string): Observable<void> {
     return this.http.delete<unknown>(`${this.url}/${id}`)
       .pipe(map(() => void 0));
   }

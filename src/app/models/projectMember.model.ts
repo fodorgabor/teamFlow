@@ -1,6 +1,6 @@
 export interface ProjectMember {
-  id: number;
-  projectId: number;
-  userId: number;
+  id: number | string;
+  projectId: number | string;
+  userId: number | string;
   role: string;
 }

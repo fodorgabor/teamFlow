@@ -15,7 +15,7 @@ export class ProjectService {
     return this.http.get<Project[]>(this.url, { params });
   }
 
-  getById(id: number): Observable<Project> {
+  getById(id: number | string): Observable<Project> {
     return this.http.get<Project>(`${this.url}/${id}`);
   }
 
@@ -23,11 +23,11 @@ export class ProjectService {
     return this.http.post<Project>(this.url, data);
   }
 
-  update(id: number, data: Partial<ProjectWrite>): Observable<Project> {
+  update(id: number | string, data: Partial<ProjectWrite>): Observable<Project> {
     return this.http.patch<Project>(`${this.url}/${id}`, data);
   }
 
-  remove(id: number): Observable<void> {
+  remove(id: number | string): Observable<void> {
     return this.http.delete<unknown>(`${this.url}/${id}`)
       .pipe(map(() => void 0));
   }

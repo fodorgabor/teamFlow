@@ -4,18 +4,23 @@ import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { forkJoin } from 'rxjs';
 
-import { TaskService, Task } from '../../service/task-service';
-import { StatusService, Status } from '../../service/status-service';
-import { PriorityService, Priority } from '../../service/priority-service';
-import { UserService, User } from '../../service/user-service';
-import { ProjectsService, Project } from '../../service/projects-service';
-import { CommentService, Comment } from '../../service/comment-service';
-import { ChecklistService, ChecklistItem } from '../../service/checklist-service';
-import { TimeEntryService, TimeEntry } from '../../service/time-entry-service';
-
-// Az ID lehet szám (1) vagy szöveg ("xVd4Mp6UZNA"), ezért szövegként hasonlítunk
-const sameId = (a: number | string, b: number | string): boolean =>
-  String(a) === String(b);
+import { TaskService } from '../core/api/task-service';
+import { StatusService } from '../core/api/status-service';
+import { PriorityService } from '../core/api/priority-service';
+import { UserService } from '../core/api/user-service';
+import { ProjectService } from '../core/api/project.service';
+import { CommentService } from '../core/api/comment-service';
+import { ChecklistService } from '../core/api/checklist-service';
+import { TimeEntryService } from '../core/api/time-entry-service';
+import { Task } from '../models/task.model';
+import { Status } from '../models/status.model';
+import { Priority } from '../models/priority.model';
+import { User } from '../models/user.model';
+import { Project } from '../models/project.model';
+import { Comment } from '../models/comment.model';
+import { ChecklistItem } from '../models/checklist-item.model';
+import { TimeEntry } from '../models/time-entry.model';
+import { sameId } from '../core/utils/id';
 
 @Component({
   selector: 'app-feladat-reszletezo',
@@ -54,7 +59,7 @@ export class FeladatReszletezo implements OnInit {
     private statusService: StatusService,
     private priorityService: PriorityService,
     private userService: UserService,
-    private projectsService: ProjectsService,
+    private projectsService: ProjectService,
     private commentService: CommentService,
     private checklistService: ChecklistService,
     private timeEntryService: TimeEntryService,
@@ -74,14 +79,14 @@ export class FeladatReszletezo implements OnInit {
 
   private loadTask(id: string): void {
     forkJoin({
-      task: this.taskService.getTask(id),
-      statuses: this.statusService.getStatuses(),
-      priorities: this.priorityService.getPriorities(),
-      users: this.userService.getUsers(),
-      projects: this.projectsService.getProjects(),
-      checklist: this.checklistService.getByTask(id),
-      comments: this.commentService.getCommentsByTask(id),
-      timeEntries: this.timeEntryService.getByTask(id),
+      task: this.taskService.getById(id),
+      statuses: this.statusService.list(),
+      priorities: this.priorityService.list(),
+      users: this.userService.list(),
+      projects: this.projectsService.list(),
+      checklist: this.checklistService.listByTask(id),
+      comments: this.commentService.listByTask(id),
+      timeEntries: this.timeEntryService.listByTask(id),
     }).subscribe({
       next: (data) => {
         this.task = data.task;
@@ -113,7 +118,7 @@ export class FeladatReszletezo implements OnInit {
   // Checklist
   toggleChecklist(item: ChecklistItem): void {
     const updated = { ...item, done: !item.done };
-    this.checklistService.update(updated).subscribe({
+    this.checklistService.update(updated.id, { done: updated.done }).subscribe({
       next: () => {
         item.done = !item.done;
         this.cdr.markForCheck();
@@ -125,7 +130,7 @@ export class FeladatReszletezo implements OnInit {
   addChecklistItem(): void {
     if (!this.newChecklistText.trim() || !this.task) return;
 
-    this.checklistService.add({
+    this.checklistService.create({
       taskId: this.task.id,
       text: this.newChecklistText.trim(),
       done: false,
@@ -140,7 +145,7 @@ export class FeladatReszletezo implements OnInit {
   }
 
   deleteChecklistItem(item: ChecklistItem): void {
-    this.checklistService.delete(item.id).subscribe({
+    this.checklistService.remove(item.id).subscribe({
       next: () => {
         this.checklist = this.checklist.filter(c => !sameId(c.id, item.id));
         this.cdr.markForCheck();
@@ -154,7 +159,7 @@ export class FeladatReszletezo implements OnInit {
     if (!this.newComment.trim() || !this.task) return;
 
     // Ideiglenesen mindig az 1-es user (Kiss Anna) ír
-    this.commentService.addComment({
+    this.commentService.create({
       taskId: this.task.id,
       userId: 1,
       body: this.newComment.trim(),
@@ -168,7 +173,7 @@ export class FeladatReszletezo implements OnInit {
     });
   }
 
-  getUserName(userId: number): string {
+  getUserName(userId: number | string): string {
     return this.users.find(u => sameId(u.id, userId))?.name ?? 'Ismeretlen';
   }
 
@@ -191,7 +196,7 @@ export class FeladatReszletezo implements OnInit {
   deleteTask(): void {
     if (!this.task || !confirm('Biztosan törölni szeretnéd ezt a feladatot?')) return;
 
-    this.taskService.deleteTask(this.task.id).subscribe({
+    this.taskService.remove(this.task.id).subscribe({
       next: () => this.router.navigate(['/feladatok']),
       error: () => this.showError('A feladat törlése nem sikerült.'),
     });

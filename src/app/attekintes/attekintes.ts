@@ -3,11 +3,16 @@ import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { forkJoin } from 'rxjs';
 
-import { TaskService, Task } from '../../service/task-service';
-import { StatusService, Status } from '../../service/status-service';
-import { UserService, User } from '../../service/user-service';
-import { ProjectsService, Project } from '../../service/projects-service';
-import { TimeEntryService } from '../../service/time-entry-service';
+import { TaskService } from '../core/api/task-service';
+import { StatusService } from '../core/api/status-service';
+import { UserService } from '../core/api/user-service';
+import { ProjectService } from '../core/api/project.service';
+import { TimeEntryService } from '../core/api/time-entry-service';
+import { Task } from '../models/task.model';
+import { Status } from '../models/status.model';
+import { User } from '../models/user.model';
+import { Project } from '../models/project.model';
+import { sameId } from '../core/utils/id';
 
 export interface DashboardTask extends Task {
   statusName: string;
@@ -15,10 +20,6 @@ export interface DashboardTask extends Task {
   assigneeName: string;
   projectName: string;
 }
-
-// Az ID lehet szám (1) vagy szöveg ("xVd4Mp6UZNA"), ezért szövegként hasonlítunk
-const sameId = (a: number | string, b: number | string): boolean =>
-  String(a) === String(b);
 
 @Component({
   selector: 'app-attekintes',
@@ -47,18 +48,18 @@ export class Attekintes implements OnInit {
     private taskService: TaskService,
     private statusService: StatusService,
     private userService: UserService,
-    private projectsService: ProjectsService,
+    private projectsService: ProjectService,
     private timeEntryService: TimeEntryService,
     private cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit(): void {
     forkJoin({
-      tasks: this.taskService.getTasks(),
-      statuses: this.statusService.getStatuses(),
-      users: this.userService.getUsers(),
-      projects: this.projectsService.getProjects(),
-      timeEntries: this.timeEntryService.getAll(),
+      tasks: this.taskService.list(),
+      statuses: this.statusService.list(),
+      users: this.userService.list(),
+      projects: this.projectsService.list(),
+      timeEntries: this.timeEntryService.list(),
     }).subscribe({
       next: ({ tasks, statuses, users, projects, timeEntries }) => {
         this.buildStats(tasks, statuses, timeEntries.map((e) => e.minutes));
