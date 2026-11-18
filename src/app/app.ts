@@ -1,14 +1,31 @@
-import { CommonModule } from '@angular/common';
 import { Component, signal } from '@angular/core';
-import { RouterLinkWithHref } from '@angular/router';
 import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 
 @Component({
-  imports: [RouterOutlet, RouterLink, RouterLinkActive, RouterLinkWithHref],
   selector: 'app-root',
-  styleUrl: './app.css',
+  imports: [RouterOutlet, RouterLink, RouterLinkActive],
   templateUrl: './app.html',
+  styleUrl: './app.css',
+  host: {
+    '(document:keydown.escape)': 'closeMenu()',
+  },
 })
 export class App {
-  protected readonly title = signal('teamFlow');
+  menuOpen = signal(false);
+
+  navItems = [
+    { path: '/', label: 'Áttekintés', icon: 'A', exact: true },
+    { path: '/feladatok', label: 'Feladatok', icon: 'F', exact: false },
+    { path: '/projektek', label: 'Projektek', icon: 'P', exact: false },
+    { path: '/csapat', label: 'Csapat', icon: 'C', exact: false },
+    { path: '/torzsadatok', label: 'Törzsadatok', icon: 'T', exact: false },
+  ];
+
+  toggleMenu(): void {
+    this.menuOpen.update((open) => !open);
+  }
+
+  closeMenu(): void {
+    this.menuOpen.set(false);
+  }
 }

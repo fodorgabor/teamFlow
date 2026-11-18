@@ -217,3 +217,52 @@
 .error {
   color: #b42318;
 }
+
+@media (max-width: 768px) {
+  .page {
+    padding: 16px;
+  }
+
+  .page-header {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+  }
+
+  .header-actions {
+    display: flex;
+    gap: 8px;
+  }
+
+  .header-actions > * {
+    flex: 1;
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* Egy oszlop: a fő tartalom, alatta az adatpanel */
+  .content-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .add-row {
+    display: flex;
+    gap: 8px;
+  }
+
+  .add-row input {
+    flex: 1;
+    min-width: 0;
+    min-height: 44px;
+  }
+
+  .add-row button,
+  .icon-btn,
+  .checklist-item label {
+    min-height: 44px;
+  }
+}
