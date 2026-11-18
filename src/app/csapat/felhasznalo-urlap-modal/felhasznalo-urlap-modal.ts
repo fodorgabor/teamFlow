@@ -7,6 +7,7 @@ import { AbstractControl, FormBuilder, ReactiveFormsModule, ValidationErrors, Va
 import { finalize } from 'rxjs';
 import { UserService } from '../../core/api/user-service';
 import { User } from '../../models/user.model';
+import { sameId } from '../../core/utils/id';
 
 function trimmedLength(min: number, max: number) {
   return (control: AbstractControl): ValidationErrors | null => {
@@ -44,8 +45,7 @@ export class FelhasznaloUrlapModal implements OnInit, AfterViewInit, OnDestroy {
     const email = String(control.value ?? '').trim().toLowerCase();
     if (!email) return null;
     const duplicate = this.users.some(candidate =>
-      candidate.id !== this.user?.id && candidate.email.trim().toLowerCase() === email
-    );
+    !sameId(candidate.id, this.user?.id) && candidate.email.trim().toLowerCase() === email    );
     return duplicate ? { emailTaken: true } : null;
   };
 
